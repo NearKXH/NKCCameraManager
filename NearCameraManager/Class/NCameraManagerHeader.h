@@ -21,6 +21,19 @@ typedef NS_ENUM(NSInteger, NCameraManagerResult) {
     NCameraManagerResultAudioFailWithStartRecord = -1002,       //录音启动失败
     NCameraManagerResultAudioFailWithFinishRecord = -1003,      //录音失败
     NCameraManagerResultAudioFailWithRecording = -1004,         //正在录音
+    NCameraManagerResultAudioFailWithoutRecording = -1005,      //没有在录音
+    NCameraManagerResultAudioFailWithSession = -1006,           //设置失败
+
+
+    /**
+     *  播放
+     */
+    NCameraManagerResultPlayFail = -3000,                      //播放初始化失败
+    NCameraManagerResultPlayFailWithNotPrepartToStart = -3001, //播放启动准备失败
+    NCameraManagerResultPlayFailWithStartPlay = -3002,         //播放启动失败
+    NCameraManagerResultPlayFailWithPlaying = -3004,           //正在播放
+    NCameraManagerResultPlayFailWithoutPlaying = -1005,        //没有在播放
+    NCameraManagerResultPlayFailWithSession = -3006,           //设置失败
 
     /**
      *  音频转换
@@ -32,6 +45,28 @@ typedef NS_ENUM(NSInteger, NCameraManagerResult) {
     NCameraManagerResultConverFailWithConvering = -2004,             //转换失败
 
     /**
+     *  视频
+     */
+    NCameraManagerResultCameraFailWithCameraConfiguration, //视频加载失败，没有授权
+    NCameraManagerResultCameraFailWithCameraDevice,
+    NCameraManagerResultCameraFailWithCameraCanNotAddToSession,
+
+    NCameraManagerResultCameraFailWithAudioConfiguration, //录音加载失败，没有授权
+    NCameraManagerResultCameraFailWithAudioToSession,
+    NCameraManagerResultCameraFailWithAudioCanNotAddToSession,
+
+    NCameraManagerResultCameraFailWithVedioOutput,
+    NCameraManagerResultCameraFailWithImageOutput,
+
+    NCameraManagerResultCameraFailWithCameraRuning,
+    NCameraManagerResultCameraFailWithChangingConfiguration,
+
+    NCameraManagerResultCameraFailWithStillImage,
+    NCameraManagerResultCameraFailWithStartRecord,
+    NCameraManagerResultCameraFailWithRecording,
+    NCameraManagerResultCameraFailWithNotRecord,
+
+    /**
      *  文件操作
      */
     NCameraManagerResultFileFail = -9000,
@@ -39,8 +74,16 @@ typedef NS_ENUM(NSInteger, NCameraManagerResult) {
     NCameraManagerResultFileFailWithMoveOrCopy = -9002,  //移动或复制文件失败
 };
 
+typedef NS_ENUM(NSUInteger, NCMFilePathInDirectory) {
+    NCMFilePathInDirectoryNone,
+    NCMFilePathInDirectoryDocument,         // DOCUMENT
+    NCMFilePathInDirectoryDocumentOriginal, // DOCUMENT/NCMOriginal
+    NCMFilePathInDirectoryDocumentConver,   // DOCUMENT/NCMConver
+    NCMFilePathInDirectoryTemp,             // TMP
+};
+
 typedef void (^NCameraManagerResultBlock)(NCameraManagerResult result, NSError *error);
 
-static NSString *const NCameraManagerFileNamePrefix = @"NCM";
+static NSString *const kNCameraManagerFileNamePrefix = @"NCM";
 
 #endif /* NCameraManagerHeader_h */

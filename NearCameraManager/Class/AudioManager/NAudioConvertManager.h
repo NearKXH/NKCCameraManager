@@ -10,11 +10,11 @@
 
 #import "NCameraManagerHeader.h"
 
-typedef void (^NAudioConvertResultBlock)(NCameraManagerResult result, NSString *toFullPath, NSError *error);
+typedef void (^NAudioConvertResultBlock)(NCameraManagerResult result, NSString *toFullPath, NCMFilePathInDirectory relativeDirectory, NSError *error);
 
 @interface NAudioConvertManager : NSObject
 
-+ (NAudioConvertManager *)shareInstance;
++ (NAudioConvertManager *)sharedInstance;
 - (void)convertAudioFromFullPath:(NSString *)fromFullPath
                       toFileName:(NSString *)toFileName
               isSaveOriginalFile:(BOOL)isSave

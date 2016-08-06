@@ -9,22 +9,23 @@
 #import "NMainViewController.h"
 
 #import "NAudioConvertManager.h"
-#import "NCMAudioManager.h"
+#import "NAudioManager.h"
 #import "NCameraManagerHeader.h"
 #import "NTmpViewController.h"
 
 @import AVFoundation;
-#import "NSError+NCustomErrorInstance.h"
-#import "NSFileManager+NFileOperationManager.h"
+#import "NSError+NCMCustomErrorInstance.h"
+#import "NSFileManager+NCMFileOperationManager.h"
 
 @interface NMainViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
-@property (nonatomic, strong) NCMAudioManager *audioManager;
+@property (nonatomic, strong) NAudioManager *audioManager;
 
 @property (nonatomic, strong) AVAudioPlayer *player;
 
 @property (nonatomic, strong) NSString *recordFullPath;
+@property (nonatomic, strong) NSString *lastFileName;
 @end
 
 @implementation NMainViewController
@@ -47,7 +48,7 @@
 }
 
 - (void)configData {
-    self.audioManager = [NCMAudioManager audioManagerWithFileFormat:NAudioManagerFileFormatCAF quality:NAudioManagerQualityHigh resultBlock:nil];
+    self.audioManager = [NAudioManager audioManagerWithFileFormat:NAudioManagerFileFormatCAF quality:NAudioManagerQualityHigh];
 }
 
 #pragma mark - UITableViewDelegate & UITableViewDataSource
@@ -72,6 +73,20 @@
     case 3:
         string = @"转码";
         break;
+
+    case 4:
+        string = @"播放";
+        break;
+    case 5:
+        string = @"暂停";
+        break;
+    case 6:
+        string = @"结束";
+        break;
+
+    case 7:
+        string = @"摄像";
+        break;
     default:
         string = [@(indexPath.row) description];
         break;
@@ -85,83 +100,71 @@
     [tableView deselectRowAtIndexPath:indexPath animated:true];
 
     if (indexPath.row == 0) {
-        [self.audioManager startRecordWithPrefix:@"NCM"
-                                     resultBlock:^(NCameraManagerResult result, NSError *error) {
-                                         NSLog(@"\nresult = %ld\nerror = %@", result, error);
-                                     }];
+        [self.audioManager startRecordWithPrefix:@"NCM" error:nil];
     }
 
     if (indexPath.row == 1) {
-        [self.audioManager pause];
+        [self.audioManager pauseRecordWithError:nil];
     }
 
     if (indexPath.row == 2) {
-        [self.audioManager stopRecordWithBlock:^(NCameraManagerResult result, NSString *fullPathFileName, NSError *error) {
-            self.recordFullPath = fullPathFileName;
-            NSString *fileName = [fullPathFileName lastPathComponent];
-            [NSFileManager NCM_moveFileFromOriginalPath:NCMFilePathInDirectoryDocumentOriginal
-                                       originalFileName:fileName
-                                                 toPath:NCMFilePathInDirectoryDocument
-                                             toFileName:fileName
-                                                 isCopy:true
-                                                  block:^(NCameraManagerResult result, NSString *fullPath, NSError *error) {
-                                                      NSLog(@"\nresult = %ld\ntoFullPath = %@\nerror = %@", result, fullPath, error);
-                                                  }];
-        }];
+        [self.audioManager
+            stopRecordWithBlock:^(NCameraManagerResult result, NSString *fullPathFileName, NCMFilePathInDirectory relativeDirectory, NSError *error) {
+                self.recordFullPath = fullPathFileName;
+                self.lastFileName = fullPathFileName;
+
+                NSString *fileName = [fullPathFileName lastPathComponent];
+                [NSFileManager NCM_moveFileFromOriginalPath:NCMFilePathInDirectoryDocumentOriginal
+                                           originalFileName:fileName
+                                                     toPath:NCMFilePathInDirectoryDocument
+                                                 toFileName:fileName
+                                                     isCopy:true
+                                                      block:^(NCameraManagerResult result, NSString *fullPath, NSError *error) {
+                                                          NSLog(@"\nresult = %ld\ntoFullPath = %@\nerror = %@", result, fullPath, error);
+                                                      }];
+            }];
     }
 
     if (indexPath.row == 3) {
-        NAudioConvertManager *manager = [NAudioConvertManager shareInstance];
+        NAudioConvertManager *manager = [NAudioConvertManager sharedInstance];
         [manager convertAudioFromFullPath:self.recordFullPath
                                toFileName:[self.recordFullPath lastPathComponent]
                        isSaveOriginalFile:true
-                                    block:^(NCameraManagerResult result, NSString *toFullPath, NSError *error) {
+                                    block:^(NCameraManagerResult result, NSString *toFullPath, NCMFilePathInDirectory relativeDirectory, NSError *error) {
+                                        self.lastFileName = toFullPath;
+
                                         NSLog(@"\nresult = %ld\ntoFullPath = %@\nerror = %@", result, toFullPath, error);
                                         [NSFileManager
                                             NCM_moveFileFromOriginalPath:NCMFilePathInDirectoryDocumentConver
                                                         originalFileName:[toFullPath lastPathComponent]
                                                                   toPath:NCMFilePathInDirectoryDocument
                                                               toFileName:[toFullPath lastPathComponent]
-                                                                  isCopy:false
+                                                                  isCopy:true
                                                                    block:^(NCameraManagerResult result, NSString *fullPath, NSError *error) {
+                                                                       self.lastFileName = fullPath;
                                                                        NSLog(@"\nresult = %ld\ntoFullPath = %@\nerror = %@", result, fullPath, error);
                                                                    }];
                                     }];
     }
 
     if (indexPath.row == 4) {
-        NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-        NSString *fullPath = [documentPath stringByAppendingPathComponent:@""];
-        NSLog(@"%@", fullPath);
+        NSLog(@"%@", self.lastFileName);
+        [self.audioManager playWithFullPathFileName:self.lastFileName error:nil];
     }
 
     if (indexPath.row == 5) {
-        NSError *error = nil;
-
-        //        NSDictionary *dic = [[NSFileManager defaultManager] attributesOfItemAtPath:self.recordFullPath error:&error];
-
-        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.recordFullPath] error:&error];
-        NSLog(@"Rate = %f", self.player.rate);
-        NSDictionary *dic = self.player.settings;
-
-        NSNumber *num = [dic objectForKey:@"AVFormatIDKey"];
-
-        NSLog(@"settings = \n%@", self.player.settings);
-        //#if __LP64__
-        //        UInt32 av32 = [num unsignedIntValue];
-        //#else
-        //        UInt32 av32 = [num unsignedLongValue];
-        //#endif
-        //
-        //        NSLog(@"%d", kAudioFormatLinearPCM);
-        //        if (av32 == kAudioFormatLinearPCM) {
-        //            NSLog(@"yes");
-        //        }
+        [self.audioManager pausePlaying:nil];
     }
 
     if (indexPath.row == 6) {
-        NSLog(@"%@", [@"sgseh/qwer.mp3" pathExtension]);
-        NSLog(@"%@", [@"qwer/sdhsh" pathExtension]);
+        [self.audioManager stopPlaying];
+    }
+
+    /**
+     *
+     */
+    if (indexPath.row == 7) {
+        
     }
 }
 

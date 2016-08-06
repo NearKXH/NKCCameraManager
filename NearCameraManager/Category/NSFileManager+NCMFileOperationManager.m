@@ -1,18 +1,19 @@
 //
-//  NSFileManager+NFileOperationManager.m
+//  NSFileManager+NCMFileOperationManager.m
 //  NearCameraManager
 //
-//  Created by NearKong on 16/7/22.
+//  Created by NearKong on 16/7/29.
 //  Copyright © 2016年 NearKong. All rights reserved.
 //
 
-#import "NSFileManager+NFileOperationManager.h"
+#import "NSFileManager+NCMFileOperationManager.h"
 
 #import "NCMFileDetailImformationModel.h"
 #import "NCameraManagerHeader.h"
-#import "NSError+NCustomErrorInstance.h"
 
-@implementation NSFileManager (NFileOperationManager)
+#import "NSError+NCMCustomErrorInstance.h"
+
+@implementation NSFileManager (NCMFileOperationManager)
 
 #pragma mark - Clear File Operate
 /**
@@ -22,8 +23,10 @@
  *  @param block
  */
 + (BOOL)NCM_clearFileWithRelativePath:(NCMFilePathInDirectory)relativePath fileName:(NSString *)fileName error:(NSError **)error {
-    NSString *path = [NSFileManager NCM_fullPathWithRelativePath:relativePath error:error];
-    if (!path || (*error)) {
+    NSError *tmpError = nil;
+    NSString *path = [NSFileManager NCM_fullPathWithRelativePath:relativePath error:&tmpError];
+    if (!path || tmpError) {
+        [NSError NCM_perfectErrorWithErrorIndicator:error error:tmpError];
         return false;
     }
     NSString *fullPath = [path stringByAppendingPathComponent:fileName];
@@ -46,14 +49,17 @@
  *  @param directoryPath document 下的相对路径文件夹
  */
 + (NSArray<NCMFileDetailImformationModel *> *)NCM_allFilesWithRelativePath:(NCMFilePathInDirectory)relativePath error:(NSError **)error {
-    NSString *fullPath = [NSFileManager NCM_fullPathWithRelativePath:relativePath error:error];
-    if (!fullPath || (*error)) {
+    NSError *tmpError = nil;
+    NSString *fullPath = [NSFileManager NCM_fullPathWithRelativePath:relativePath error:&tmpError];
+    if (!fullPath || tmpError) {
+        [NSError NCM_perfectErrorWithErrorIndicator:error error:tmpError];
         return nil;
     }
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *filesNameArray = [fileManager contentsOfDirectoryAtPath:fullPath error:error];
-    if (*error) {
+    NSArray *filesNameArray = [fileManager contentsOfDirectoryAtPath:fullPath error:&tmpError];
+    if (tmpError) {
+        [NSError NCM_perfectErrorWithErrorIndicator:error error:tmpError];
         return nil;
     }
 
@@ -83,7 +89,7 @@
                               toPath:(NCMFilePathInDirectory)toPath
                           toFileName:(NSString *)toFileName
                               isCopy:(BOOL)isCopy
-                               block:(NSFileManagerMoveFileBlock)block {
+                               block:(NCMFileManagerMoveFileBlock)block {
     NSError *error = nil;
 
     if (!originalFileName || [originalFileName isEqualToString:@""]) {
@@ -145,9 +151,10 @@
  *  @return 绝对路径
  */
 + (NSString *)NCM_fullPathWithRelativePath:(NCMFilePathInDirectory)relativePath fileName:(NSString *)fileName error:(NSError **)error {
-
-    NSString *filePath = [NSFileManager NCM_fullPathWithRelativePath:relativePath error:error];
-    if (!filePath) {
+    NSError *tmpError = nil;
+    NSString *filePath = [NSFileManager NCM_fullPathWithRelativePath:relativePath error:&tmpError];
+    if (!filePath || tmpError) {
+        [NSError NCM_perfectErrorWithErrorIndicator:error error:tmpError];
         return nil;
     }
 
@@ -156,7 +163,7 @@
      */
     if (!fileName || [fileName isEqualToString:@""]) {
         NSInteger time = (NSInteger)[[NSDate date] timeIntervalSince1970];
-        fileName = [NSString stringWithFormat:@"%@_%@", NCameraManagerFileNamePrefix, @(time)];
+        fileName = [NSString stringWithFormat:@"%@_%@", kNCameraManagerFileNamePrefix, @(time)];
     }
 
     NSString *fullPath = [filePath stringByAppendingPathComponent:fileName];
@@ -166,7 +173,7 @@
 
 + (NSString *)NCM_fullPathWithRelativePath:(NCMFilePathInDirectory)relativePath prefix:(NSString *)prefix error:(NSError **)error {
     if (!prefix || [prefix isEqualToString:@""]) {
-        prefix = NCameraManagerFileNamePrefix;
+        prefix = kNCameraManagerFileNamePrefix;
     }
     NSInteger time = (NSInteger)[[NSDate date] timeIntervalSince1970];
     NSString *fileName = [NSString stringWithFormat:@"%@_%@", prefix, @(time)];
@@ -182,25 +189,26 @@
  *
  *  @return
  */
-static NSString *NCameraManagerDocumentOriginalFileDirectory = @"NCM_Original";
-static NSString *NCameraManagerDocumentConverFileDirectory = @"NCM_Conver";
+static NSString *kNCameraManagerDocumentOriginalFileDirectory = @"NCM_Original";
+static NSString *kNCameraManagerDocumentConverFileDirectory = @"NCM_Conver";
 + (NSString *)NCM_fullPathWithRelativePath:(NCMFilePathInDirectory)relativePath error:(NSError **)error {
     NSString *filePath = nil;
+    NSError *tmpError = nil;
 
     if (relativePath == NCMFilePathInDirectoryDocument) {
         filePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
 
     } else if (relativePath == NCMFilePathInDirectoryDocumentOriginal) {
         filePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-        filePath = [filePath stringByAppendingPathComponent:NCameraManagerDocumentOriginalFileDirectory];
-        if (![NSFileManager NCM_createDirectoryWithPath:filePath error:error]) {
+        filePath = [filePath stringByAppendingPathComponent:kNCameraManagerDocumentOriginalFileDirectory];
+        if (![NSFileManager NCM_createDirectoryWithPath:filePath error:&tmpError]) {
             return nil;
         }
 
     } else if (relativePath == NCMFilePathInDirectoryDocumentConver) {
         filePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-        filePath = [filePath stringByAppendingPathComponent:NCameraManagerDocumentConverFileDirectory];
-        if (![NSFileManager NCM_createDirectoryWithPath:filePath error:error]) {
+        filePath = [filePath stringByAppendingPathComponent:kNCameraManagerDocumentConverFileDirectory];
+        if (![NSFileManager NCM_createDirectoryWithPath:filePath error:&tmpError]) {
             return nil;
         }
 
@@ -208,6 +216,7 @@ static NSString *NCameraManagerDocumentConverFileDirectory = @"NCM_Conver";
         filePath = NSTemporaryDirectory();
     }
 
+    [NSError NCM_perfectErrorWithErrorIndicator:error error:tmpError];
     return filePath;
 }
 
@@ -220,10 +229,12 @@ static NSString *NCameraManagerDocumentConverFileDirectory = @"NCM_Conver";
  *  @return
  */
 + (BOOL)NCM_createDirectoryWithPath:(NSString *)path error:(NSError **)error {
+    NSError *tmpError = nil;
     BOOL directory = false;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:path isDirectory:&directory] || !directory) {
-        if (![fileManager createDirectoryAtPath:path withIntermediateDirectories:false attributes:nil error:error] || (*error)) {
+        if (![fileManager createDirectoryAtPath:path withIntermediateDirectories:false attributes:nil error:&tmpError] || tmpError) {
+            [NSError NCM_perfectErrorWithErrorIndicator:error error:tmpError];
             return false;
         }
     }

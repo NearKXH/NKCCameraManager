@@ -1,8 +1,8 @@
 //
-//  NSFileManager+NFileOperationManager.h
+//  NSFileManager+NCMFileOperationManager.h
 //  NearCameraManager
 //
-//  Created by NearKong on 16/7/22.
+//  Created by NearKong on 16/7/29.
 //  Copyright © 2016年 NearKong. All rights reserved.
 //
 
@@ -10,17 +10,10 @@
 
 #import "NCameraManagerHeader.h"
 
-typedef NS_ENUM(NSUInteger, NCMFilePathInDirectory) {
-    NCMFilePathInDirectoryDocument,         // DOCUMENT
-    NCMFilePathInDirectoryDocumentOriginal, // DOCUMENT/NCMOriginal
-    NCMFilePathInDirectoryDocumentConver,   // DOCUMENT/NCMConver
-    NCMFilePathInDirectoryTemp,             // TMP
-};
-
-typedef void (^NSFileManagerMoveFileBlock)(NCameraManagerResult result, NSString *fullPath, NSError *error);
+typedef void (^NCMFileManagerMoveFileBlock)(NCameraManagerResult result, NSString *fullPath, NSError *error);
 
 @class NCMFileDetailImformationModel;
-@interface NSFileManager (NFileOperationManager)
+@interface NSFileManager (NCMFileOperationManager)
 
 #pragma mark - FileManager Operate
 /**
@@ -65,7 +58,7 @@ typedef void (^NSFileManagerMoveFileBlock)(NCameraManagerResult result, NSString
                               toPath:(NCMFilePathInDirectory)toPath
                           toFileName:(NSString *)toFileName
                               isCopy:(BOOL)isCopy
-                               block:(NSFileManagerMoveFileBlock)block;
+                               block:(NCMFileManagerMoveFileBlock)block;
 
 #pragma mark - File Name
 /**

@@ -9,19 +9,24 @@
 #import "NAudioConvertManager.h"
 
 @import AVFoundation;
-#import "NSError+NCustomErrorInstance.h"
-#import "NSFileManager+NFileOperationManager.h"
+#import "NCameraManagerHeader.h"
 #import "lame.h"
+
+#import "NSError+NCMCustomErrorInstance.h"
+#import "NSFileManager+NCMFileOperationManager.h"
 
 @interface NAudioConvertManager ()
 @property (nonatomic, strong) dispatch_queue_t converQueue;
-
 @end
 
 @implementation NAudioConvertManager
 
-static char const *NAudioConvertManagerConverQueueIdentifier = "NAudioConvertManagerConverQueueIdentifier";
-+ (NAudioConvertManager *)shareInstance {
+- (void)dealloc {
+    NSLog(@"--NAudioConvertManager--dealloc--");
+}
+
+static char const *kNAudioConvertManagerConverQueueIdentifier = "kNAudioConvertManagerConverQueueIdentifier";
++ (NAudioConvertManager *)sharedInstance {
     static NAudioConvertManager *shareInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -34,7 +39,7 @@ static char const *NAudioConvertManagerConverQueueIdentifier = "NAudioConvertMan
 }
 
 - (void)configData {
-    self.converQueue = dispatch_queue_create(NAudioConvertManagerConverQueueIdentifier, DISPATCH_QUEUE_SERIAL);
+    self.converQueue = dispatch_queue_create(kNAudioConvertManagerConverQueueIdentifier, DISPATCH_QUEUE_SERIAL);
 }
 
 #pragma mark - Conver
@@ -49,7 +54,7 @@ static char const *NAudioConvertManagerConverQueueIdentifier = "NAudioConvertMan
         if (![fileManager fileExistsAtPath:fromFullPath]) {
             error = [NSError NCM_errorWithCode:NCameraManagerResultConverFailWithOriginalFileNotExists message:@"Original File Not-Exists"];
             if (block) {
-                block(NCameraManagerResultConverFailWithOriginalFileNotExists, nil, error);
+                block(NCameraManagerResultConverFailWithOriginalFileNotExists, nil, NCMFilePathInDirectoryNone, error);
             }
             return;
         }
@@ -61,7 +66,7 @@ static char const *NAudioConvertManagerConverQueueIdentifier = "NAudioConvertMan
         NSString *toFullPath = [NSFileManager NCM_fullPathWithRelativePath:NCMFilePathInDirectoryDocumentConver fileName:fileName error:&error];
         if (!toFullPath || error) {
             if (block) {
-                block(NCameraManagerResultConverFailWithToFileInstance, nil, error);
+                block(NCameraManagerResultConverFailWithToFileInstance, nil, NCMFilePathInDirectoryNone, error);
             }
             return;
         }
@@ -69,7 +74,7 @@ static char const *NAudioConvertManagerConverQueueIdentifier = "NAudioConvertMan
         AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:fromFullPath] error:&error];
         if (!player || error) {
             if (block) {
-                block(NCameraManagerResultConverFailWithOriginalFileInstance, nil, error);
+                block(NCameraManagerResultConverFailWithOriginalFileInstance, nil, NCMFilePathInDirectoryNone, error);
             }
             return;
         }
@@ -84,7 +89,7 @@ static char const *NAudioConvertManagerConverQueueIdentifier = "NAudioConvertMan
         if (audioKey != kAudioFormatLinearPCM) {
             error = [NSError NCM_errorWithCode:NCameraManagerResultConverFailWithOriginalFileInstance message:@"just canver CAF format"];
             if (block) {
-                block(NCameraManagerResultConverFailWithOriginalFileInstance, nil, error);
+                block(NCameraManagerResultConverFailWithOriginalFileInstance, nil, NCMFilePathInDirectoryNone, error);
             }
             return;
         }
@@ -92,13 +97,19 @@ static char const *NAudioConvertManagerConverQueueIdentifier = "NAudioConvertMan
         BOOL scuess = [self audio_PCMtoMP3FromFullPath:fromFullPath toFullPath:toFullPath originalSettings:settings error:&error];
         if (!scuess || error) {
             if (block) {
-                block(NCameraManagerResultConverFailWithOriginalFileNotExists, nil, error);
+                block(NCameraManagerResultConverFailWithOriginalFileNotExists, nil, NCMFilePathInDirectoryNone, error);
             }
             return;
         }
 
         if (block) {
-            block(NCameraManagerResultSuccess, toFullPath, error);
+            block(NCameraManagerResultSuccess, toFullPath, NCMFilePathInDirectoryDocumentConver, error);
+        }
+
+        if (!isSave) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [NSFileManager NCM_clearFileWithFullFilePath:fromFullPath error:nil];
+            });
         }
     });
 }
@@ -154,7 +165,7 @@ static char const *NAudioConvertManagerConverQueueIdentifier = "NAudioConvertMan
         *error = [NSError NCM_errorWithCode:NCameraManagerResultConverFailWithConvering message:[exception description]];
         scuess = false;
     } @finally {
-        NSLog(@"MP3生成成功: %@", toFullPath);
+//        NSLog(@"MP3生成成功: %@", toFullPath);
     }
 
     return scuess;

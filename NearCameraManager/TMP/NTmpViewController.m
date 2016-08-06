@@ -8,13 +8,12 @@
 
 #import "NTmpViewController.h"
 
-#import "Class/NCMAudioManager.h"
 #import "NCameraManagerHeader.h"
 #import "NMainViewController.h"
 
 @interface NTmpViewController ()
 @property (nonatomic, strong) NSString *string;
-@property (nonatomic, strong) NCMAudioManager *audioManager;
+
 @end
 
 @implementation NTmpViewController
