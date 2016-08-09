@@ -21,7 +21,9 @@ typedef NS_ENUM(NSUInteger, NAudioManagerFileFormat) {
     NAudioManagerFileFormatAAC, // AAC
 };
 
-typedef void (^NAudioManagerFinishBlock)(NCameraManagerResult result, NSString *fullPathFileName, NCMFilePathInDirectory relativeDirectory, NSError *error);
+typedef void (^NAudioManagerFinishRecordingBlock)(NCameraManagerResult result, NSString *fullPathFileName, NCMFilePathInDirectory relativeDirectory,
+                                                  NSError *error);
+typedef void (^NAudioManagerFinishPlayingBlock)(BOOL success);
 
 @interface NAudioManager : NSObject
 @property (nonatomic, assign, readonly) NAudioManagerQuality quality;
@@ -31,29 +33,26 @@ typedef void (^NAudioManagerFinishBlock)(NCameraManagerResult result, NSString *
 @property (nonatomic, assign, readonly, getter=isPlaying) BOOL playing;
 @property (nonatomic, assign, readonly, getter=isPlayPausing) BOOL playPausing;
 
-/**
- *  暂时一定会成功，可以不判断block
- *
- *  @param quality       注意，max真的很大，测试6秒，有5M
- *  @param fileExtension <#fileExtension description#>
- *  @param block
- *
- *  @return
- */
 + (NAudioManager *)audioManagerWithFileFormat:(NAudioManagerFileFormat)fileFormat quality:(NAudioManagerQuality)quality;
 
 /**
  *  Recording
  *
- *  @param prefix File name is prefix_(NSInteger)[NSDate date].timeIntervalSince1970] ,if nil default NCameraManagerFileNamePrefix
+ *  @param prefix File name is prefix_(NSInteger)[NSDate date].timeIntervalSince1970] ,if nil default NCM
  *  @param block
  */
 - (NCameraManagerResult)startRecordWithPrefix:(NSString *)prefix error:(NSError **)error;
 - (NCameraManagerResult)pauseRecordWithError:(NSError **)error;
-- (void)stopRecordWithBlock:(NAudioManagerFinishBlock)block;
+- (void)stopRecordWithBlock:(NAudioManagerFinishRecordingBlock)block;
 
-- (NCameraManagerResult)playWithRelativePath:(NCMFilePathInDirectory)relativePath fileName:(NSString *)fileName error:(NSError **)error;
-- (NCameraManagerResult)playWithFullPathFileName:(NSString *)fileName error:(NSError **)error;
+/**
+ *  Play
+ */
+- (NCameraManagerResult)playWithRelativePath:(NCMFilePathInDirectory)relativePath
+                                    fileName:(NSString *)fileName
+                                       error:(NSError **)error
+                                 finishBlock:(NAudioManagerFinishPlayingBlock)block;
+- (NCameraManagerResult)playWithFullPathFileName:(NSString *)fileName error:(NSError **)error finishBlock:(NAudioManagerFinishPlayingBlock)block;
 - (NCameraManagerResult)pausePlaying:(NSError **)error;
 - (void)stopPlaying;
 

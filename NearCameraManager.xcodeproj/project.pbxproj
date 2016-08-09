@@ -11,6 +11,10 @@
 		0D554ACD1D40B1DA0057FE76 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D554ACC1D40B1DA0057FE76 /* AppDelegate.m */; };
 		0D554AD51D40B1DB0057FE76 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D554AD41D40B1DB0057FE76 /* Assets.xcassets */; };
 		0D554AE01D40B2860057FE76 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0D554ADF1D40B2860057FE76 /* LaunchScreen.xib */; };
+		0DB5EE4D1D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB5EE481D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.m */; };
+		0DB5EE4E1D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0DB5EE491D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.xib */; };
+		0DB5EE541D59D8190040EAC4 /* NDefaultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB5EE521D59D8190040EAC4 /* NDefaultViewController.m */; };
+		0DB5EE551D59D8190040EAC4 /* NDefaultViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0DB5EE531D59D8190040EAC4 /* NDefaultViewController.xib */; };
 		0DB919B91D4C483E00A297E0 /* NCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB919B61D4C483E00A297E0 /* NCameraManager.m */; };
 		0DB919BA1D4C483E00A297E0 /* NCameraPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB919B81D4C483E00A297E0 /* NCameraPreviewView.m */; };
 		0DB919C71D4C485B00A297E0 /* NMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB919C21D4C485B00A297E0 /* NMainViewController.m */; };
@@ -35,6 +39,12 @@
 		0D554AD91D40B1DB0057FE76 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0D554ADF1D40B2860057FE76 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		0D554AE91D40B9F60057FE76 /* NCameraManagerHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCameraManagerHeader.h; sourceTree = "<group>"; };
+		0DB5EE471D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCameraManagerDefaultViewController.h; sourceTree = "<group>"; };
+		0DB5EE481D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCameraManagerDefaultViewController.m; sourceTree = "<group>"; };
+		0DB5EE491D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCameraManagerDefaultViewController.xib; sourceTree = "<group>"; };
+		0DB5EE511D59D8190040EAC4 /* NDefaultViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NDefaultViewController.h; sourceTree = "<group>"; };
+		0DB5EE521D59D8190040EAC4 /* NDefaultViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NDefaultViewController.m; sourceTree = "<group>"; };
+		0DB5EE531D59D8190040EAC4 /* NDefaultViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NDefaultViewController.xib; sourceTree = "<group>"; };
 		0DB919B51D4C483E00A297E0 /* NCameraManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCameraManager.h; sourceTree = "<group>"; };
 		0DB919B61D4C483E00A297E0 /* NCameraManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCameraManager.m; sourceTree = "<group>"; };
 		0DB919B71D4C483E00A297E0 /* NCameraPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCameraPreviewView.h; sourceTree = "<group>"; };
@@ -142,6 +152,12 @@
 		0D554AE31D40B4B50057FE76 /* DefaultViewController */ = {
 			isa = PBXGroup;
 			children = (
+				0DB5EE511D59D8190040EAC4 /* NDefaultViewController.h */,
+				0DB5EE521D59D8190040EAC4 /* NDefaultViewController.m */,
+				0DB5EE531D59D8190040EAC4 /* NDefaultViewController.xib */,
+				0DB5EE471D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.h */,
+				0DB5EE481D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.m */,
+				0DB5EE491D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.xib */,
 			);
 			path = DefaultViewController;
 			sourceTree = "<group>";
@@ -258,10 +274,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0DB5EE4E1D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.xib in Resources */,
 				0DB919CA1D4C485B00A297E0 /* NTmpViewController.xib in Resources */,
 				0DB919C81D4C485B00A297E0 /* NMainViewController.xib in Resources */,
 				0D554AE01D40B2860057FE76 /* LaunchScreen.xib in Resources */,
 				0D554AD51D40B1DB0057FE76 /* Assets.xcassets in Resources */,
+				0DB5EE551D59D8190040EAC4 /* NDefaultViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,6 +291,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0DB919C71D4C485B00A297E0 /* NMainViewController.m in Sources */,
+				0DB5EE541D59D8190040EAC4 /* NDefaultViewController.m in Sources */,
 				0DD2D0261D4AF636005F92BC /* NSError+NCMCustomErrorInstance.m in Sources */,
 				0DD2D0291D4AF6AA005F92BC /* NSFileManager+NCMFileOperationManager.m in Sources */,
 				0D554ACD1D40B1DA0057FE76 /* AppDelegate.m in Sources */,
@@ -281,6 +300,7 @@
 				0D554ACA1D40B1DA0057FE76 /* main.m in Sources */,
 				0DB919B91D4C483E00A297E0 /* NCameraManager.m in Sources */,
 				0DD2D0341D4AF8C7005F92BC /* NAudioManager.m in Sources */,
+				0DB5EE4D1D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.m in Sources */,
 				0DB919CD1D4C4B0A00A297E0 /* UIImage+NCMImageScale.m in Sources */,
 				0DB919C91D4C485B00A297E0 /* NTmpViewController.m in Sources */,
 				0DD2D0311D4AF890005F92BC /* NCMFileDetailImformationModel.m in Sources */,

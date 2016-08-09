@@ -46,25 +46,33 @@ typedef NS_ENUM(NSInteger, NCameraManagerResult) {
 
     /**
      *  视频
+     *  注意：同时使用了 -4000 & -5000 系列的状态码
      */
-    NCameraManagerResultCameraFailWithCameraConfiguration, //视频加载失败，没有授权
-    NCameraManagerResultCameraFailWithCameraDevice,
-    NCameraManagerResultCameraFailWithCameraCanNotAddToSession,
+    NCameraManagerResultCameraFail = -4000,
+    NCameraManagerResultCameraFailWithCameraConfiguration = -4001,      //摄像头加载失败，没有授权
+    NCameraManagerResultCameraFailWithCameraDevice = -4002,             //摄像头硬件加载失败
+    NCameraManagerResultCameraFailWithCameraCanNotAddToSession = -4003, //摄像头添加失败
 
-    NCameraManagerResultCameraFailWithAudioConfiguration, //录音加载失败，没有授权
-    NCameraManagerResultCameraFailWithAudioToSession,
-    NCameraManagerResultCameraFailWithAudioCanNotAddToSession,
+    NCameraManagerResultCameraFailWithAudioConfiguration = -5001,      //录音加载失败，没有授权
+    NCameraManagerResultCameraFailWithAudioToSession = -50002,         //麦克风硬件加载失败
+    NCameraManagerResultCameraFailWithAudioCanNotAddToSession = -5003, //麦克风添加失败
 
-    NCameraManagerResultCameraFailWithVedioOutput,
-    NCameraManagerResultCameraFailWithImageOutput,
+    NCameraManagerResultCameraFailWithVideoOutput = -4004, //输出录像失败
+    NCameraManagerResultCameraFailWithImageOutput = -4005, //输出图片失败
 
-    NCameraManagerResultCameraFailWithCameraRuning,
-    NCameraManagerResultCameraFailWithChangingConfiguration,
+    NCameraManagerResultCameraFailWithSessionStartRuning = -4006, //开始
+    NCameraManagerResultCameraFailWithSessionStopRuning = -4007,  //结束
 
-    NCameraManagerResultCameraFailWithStillImage,
-    NCameraManagerResultCameraFailWithStartRecord,
-    NCameraManagerResultCameraFailWithRecording,
-    NCameraManagerResultCameraFailWithNotRecord,
+    NCameraManagerResultCameraFailWithChangingConfiguration = -4008, //摄像头设置未成功
+    NCameraManagerResultCameraFailWithCameraRuning = -4009,          //摄像头正在运作
+
+    NCameraManagerResultCameraFailWithSessionRuning = -4010, //流正在运作
+
+    NCameraManagerResultCameraFailWithStillImage = -4101,   //拍照失败
+    NCameraManagerResultCameraFailWithStartRecord = -4201,  //
+    NCameraManagerResultCameraFailWithRecording = -4202,    //
+    NCameraManagerResultCameraFailWithNotRecord = -4203,    //
+    NCameraManagerResultCameraFailWithFinishRecord = -4204, //
 
     /**
      *  文件操作
@@ -81,9 +89,5 @@ typedef NS_ENUM(NSUInteger, NCMFilePathInDirectory) {
     NCMFilePathInDirectoryDocumentConver,   // DOCUMENT/NCMConver
     NCMFilePathInDirectoryTemp,             // TMP
 };
-
-typedef void (^NCameraManagerResultBlock)(NCameraManagerResult result, NSError *error);
-
-static NSString *const kNCameraManagerFileNamePrefix = @"NCM";
 
 #endif /* NCameraManagerHeader_h */

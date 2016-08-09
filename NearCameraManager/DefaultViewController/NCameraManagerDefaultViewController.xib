@@ -7,6 +7,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="NCameraManagerDefaultViewController">
             <connections>
+                <outlet property="cameraFlashButton" destination="eQT-kk-exY" id="wrE-Kd-uzV"/>
+                <outlet property="cameraPreviewView" destination="9V8-DV-kS3" id="3gK-f1-8ZB"/>
                 <outlet property="view" destination="HQK-tR-NSz" id="aBi-Z0-VBz"/>
             </connections>
         </placeholder>
@@ -49,6 +51,9 @@
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iyf-nx-aRI">
                                             <rect key="frame" x="48" y="0.0" width="30" height="30"/>
                                             <state key="normal" image="rotate"/>
+                                            <connections>
+                                                <action selector="changeCameraAction:" destination="-1" eventType="touchUpInside" id="aW0-Me-CLp"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -64,6 +69,9 @@
                                             <rect key="frame" x="32" y="0.0" width="60" height="30"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <state key="normal" title="Auto" image="lightning"/>
+                                            <connections>
+                                                <action selector="changeFlashAction:" destination="-1" eventType="touchUpInside" id="DgB-6D-Lh6"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -189,17 +197,34 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kLl-ek-ivl">
                     <rect key="frame" x="0.0" y="597" width="375" height="70"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Ms-HS-3cl">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Ms-HS-3cl">
                             <rect key="frame" x="158" y="5" width="60" height="60"/>
-                            <state key="normal" image="camera"/>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tNN-2I-tJd">
-                            <rect key="frame" x="82" y="5" width="60" height="60"/>
-                            <state key="normal" image="film"/>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rln-LQ-6rZ">
-                            <rect key="frame" x="234" y="5" width="60" height="60"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="60" id="LdJ-AT-v6D"/>
+                                <constraint firstAttribute="height" constant="60" id="bPT-Il-aSc"/>
+                            </constraints>
                             <state key="normal" image="audio"/>
+                            <connections>
+                                <action selector="stillImageAction:" destination="-1" eventType="touchUpInside" id="qQF-93-t34"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tNN-2I-tJd">
+                            <rect key="frame" x="82" y="5" width="60" height="60"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="60" id="VcC-Uj-zgp"/>
+                                <constraint firstAttribute="height" constant="60" id="Xda-QY-zhL"/>
+                            </constraints>
+                            <state key="normal" image="audio"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rln-LQ-6rZ">
+                            <rect key="frame" x="234" y="5" width="60" height="60"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="60" id="QKO-4x-vUP"/>
+                                <constraint firstAttribute="height" constant="60" id="xqh-ov-2Aa"/>
+                            </constraints>
+                            <state key="normal" image="audio"/>
+                            <state key="selected" image="audio-on"/>
+                            <state key="highlighted" image="audio-on"/>
                         </button>
                     </subviews>
                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -216,8 +241,8 @@
                     </constraints>
                     <variation key="default">
                         <mask key="constraints">
-                            <exclude reference="BH1-mD-L1r"/>
                             <exclude reference="4et-pX-wTM"/>
+                            <exclude reference="BH1-mD-L1r"/>
                         </mask>
                     </variation>
                 </view>
@@ -240,9 +265,8 @@
         </view>
     </objects>
     <resources>
-        <image name="audio" width="30" height="30"/>
-        <image name="camera" width="30" height="30"/>
-        <image name="film" width="30" height="30"/>
+        <image name="audio" width="60" height="60"/>
+        <image name="audio-on" width="60" height="60"/>
         <image name="lightning" width="30" height="30"/>
         <image name="rotate" width="30" height="30"/>
     </resources>

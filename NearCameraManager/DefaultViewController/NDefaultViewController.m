@@ -10,8 +10,6 @@
 
 #import "NAudioManager.h"
 #import "NCameraManager.h"
-#import "NSString+NFilePathManager.h"
-#import "UIImage+NCreateImageInRange.h"
 
 @interface NDefaultViewController ()
 @property (weak, nonatomic) IBOutlet UIButton *flashButton;
@@ -33,7 +31,7 @@
 @property (nonatomic, strong) NCameraManager *manager;
 @property (nonatomic, strong) NAudioManager *audioManager;
 
-@property (nonatomic, assign) NCameraFlashMode flashMode;
+@property (nonatomic, assign) NCameraManagerFlashMode flashMode;
 
 @property (nonatomic, strong) NSTimer *audioTimer;
 @property (nonatomic, strong) NSTimer *movieTimer;
@@ -79,120 +77,46 @@
 }
 
 - (void)configData {
-    self.manager = [NCameraManager cameraManagerAuthorizationWithMode:NManagerModeVideo | NManagerModeAudio
-                                                          previewView:self.view
-                                                  authorizationHandle:^(NCameraSetupResult setupResult, NSError *error) {
-                                                      if (setupResult != NCameraSetupResultSuccess || error) {
-                                                          NSLog(@"\n--result = %ld\nerror = %@--", setupResult, error);
-                                                      } else {
-                                                          NSLog(@"--Scuess--");
-                                                      }
-                                                  }];
-    [self.manager startRuning];
-
-    self.audioManager = [NAudioManager audioManagerWithMode:NAudioManagerModeRecord setupResultBlock:nil];
-
-    self.flashMode = NCameraFlashModeAuto;
 }
 
 #pragma mark - Action
 - (IBAction)changeCameraAction:(id)sender {
-    [self.manager changeCameraWithHandle:^(NCameraSetupResult setupResult, NSError *error) {
-        if (setupResult != NCameraSetupResultSuccess || error) {
-            NSLog(@"\n--result = %ld\nerror = %@--", setupResult, error);
-        } else {
-            NSLog(@"--Scuess--");
-        }
-    }];
+    //    [self.manager changeCameraWithHandle:^(NCameraSetupResult setupResult, NSError *error) {
+    //        if (setupResult != NCameraSetupResultSuccess || error) {
+    //            NSLog(@"\n--result = %ld\nerror = %@--", setupResult, error);
+    //        } else {
+    //            NSLog(@"--Scuess--");
+    //        }
+    //    }];
 }
 
 - (IBAction)changeFlashAction:(id)sender {
-    NSString *flashName = @"Auto";
-    NSString *imageName = @"lightning";
-    switch (self.flashMode) {
-    case NCameraFlashModeAuto:
-        self.flashMode = NCameraFlashModeOn;
-        flashName = @"On";
-        imageName = @"lightning-on";
-        break;
-
-    case NCameraFlashModeOn:
-        self.flashMode = NCameraFlashModeOff;
-        flashName = @"Off";
-        imageName = @"lightning";
-        break;
-
-    case NCameraFlashModeOff:
-        self.flashMode = NCameraFlashModeAuto;
-        flashName = @"Auto";
-        imageName = @"lightning";
-        break;
-
-    default:
-        break;
-    }
-
-    if ([self.manager changeFlashmode:self.flashMode]) {
-        [self.flashButton setTitle:flashName forState:UIControlStateNormal];
-        [self.flashButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
-    }
+    NSLog(@"--changeFlashAction--");
 }
 
 - (IBAction)stillImageAction:(id)sender {
-    [self.manager
-        snapStillImageIsSaveToPhotoLibrary:false
-                               imageHandle:^(UIImage *image, NSError *error) {
-                                   // freebackBlock
-                                   if (error || !image) {
-                                       NSLog(@"\n--%@--", error);
-                                       return;
-                                   } else {
-                                       NSLog(@"--Scuess--");
-                                   }
-
-                                   UIImage *newImage = image;
-                                   CGFloat width = image.size.width;
-                                   CGFloat height = image.size.height;
-                                   CGSize size = self.preview.bounds.size;
-
-                                   if (size.width / size.height != width / height && !self.manager.isMovieRecording) {
-
-                                       if (size.width / size.height > width / height) {
-                                           height = width / size.width * size.height;
-                                       } else {
-                                           width = height / size.height * size.width;
-                                       }
-                                       newImage = [image N_cutImageInRect:CGRectMake(self.preview.frame.origin.x, self.preview.frame.origin.y, width, height)];
-                                   }
-
-                                   NSData *imageData = UIImageJPEGRepresentation(newImage, 1);
-                                   [UIImage N_saveImageInPhotosLibraryFromData:imageData];
-
-                                   NSString *outputFilePath = [NSString N_filesPathForSavedWithRecordType:NCameraManagerRecordPathTypeImage];
-                                   NSFileManager *fileManager = [NSFileManager defaultManager];
-                                   [fileManager createFileAtPath:outputFilePath contents:imageData attributes:nil];
-                               }];
+    NSLog(@"--stillImageAction--");
 }
 
 - (IBAction)movieRecordAction:(id)sender {
-    if (self.manager.isMovieRecording) {
-        [self updateShowModeWhenMovieRecordStart:false];
-        [self.manager stopMovieRecord];
-
-    } else {
-        [self updateShowModeWhenMovieRecordStart:true];
-        [self.manager startMovieRecord];
-    }
+    //    if (self.manager.isMovieRecording) {
+    //        [self updateShowModeWhenMovieRecordStart:false];
+    //        [self.manager stopMovieRecord];
+    //
+    //    } else {
+    //        [self updateShowModeWhenMovieRecordStart:true];
+    //        [self.manager startMovieRecord];
+    //    }
 }
 
 - (IBAction)audioRecordAction:(id)sender {
-    if (self.audioManager.isAudioRecording) {
-        [self updateShowModeWhenAudioRecordStart:false];
-        [self.audioManager stopAudioRecord];
-    } else {
-        [self updateShowModeWhenAudioRecordStart:true];
-        [self.audioManager startAudioRecord];
-    }
+    //    if (self.audioManager.isAudioRecording) {
+    //        [self updateShowModeWhenAudioRecordStart:false];
+    //        [self.audioManager stopAudioRecord];
+    //    } else {
+    //        [self updateShowModeWhenAudioRecordStart:true];
+    //        [self.audioManager startAudioRecord];
+    //    }
 }
 
 - (IBAction)jumpToPhoto:(id)sender {

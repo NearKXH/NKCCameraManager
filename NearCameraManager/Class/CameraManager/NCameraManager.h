@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-
 @import UIKit;
+
 #import "NCameraManagerHeader.h"
 
 typedef NS_ENUM(NSUInteger, NCameraManagerMode) {
@@ -16,12 +16,13 @@ typedef NS_ENUM(NSUInteger, NCameraManagerMode) {
     NCameraManagerModeVedio,  //录像包括声音
 };
 
-typedef NS_ENUM(NSUInteger, NCameraFlashMode) {
-    NCameraFlashModeAudo,
-    NCameraFlashModeOn,
-    NCameraFlashModeOff,
+typedef NS_ENUM(NSUInteger, NCameraManagerFlashMode) {
+    NCameraManagerFlashModeAudo,
+    NCameraManagerFlashModeOn,
+    NCameraManagerFlashModeOff,
 };
 
+typedef void (^NCameraManagerResultBlock)(NCameraManagerResult result, NSError *error);
 typedef void (^NCameraManagerStillImageBlock)(NCameraManagerResult result, UIImage *image, NSError *error);
 typedef void (^NCameraManagerRecordBlock)(NCameraManagerResult result, NSString *fileFullPath, NCMFilePathInDirectory directory, NSError *error);
 
@@ -33,17 +34,19 @@ typedef void (^NCameraManagerRecordBlock)(NCameraManagerResult result, NSString 
                                            previewView:(UIView *)previewView
                                    authorizationHandle:(NCameraManagerResultBlock)managerResultBlock;
 
+- (void)configAuthorizationWithAuthorizationHandle:(NCameraManagerResultBlock)managerResultBlock;
+
 /**
  *  Runing
  */
-- (void)startRuning;
-- (void)stopRuning;
+- (void)startRuningWithBlock:(NCameraManagerResultBlock)block;
+- (void)stopRuningWithBlock:(NCameraManagerResultBlock)block;
 
 /**
  *  flashModel
  */
 - (BOOL)hasFlashInCurrentDevice;
-- (BOOL)changeFlashmode:(NCameraFlashMode)flashMode error:(NSError **)error;
+- (BOOL)changeFlashmode:(NCameraManagerFlashMode)flashMode error:(NSError **)error;
 
 /**
  *  CameraChanging
@@ -59,6 +62,6 @@ typedef void (^NCameraManagerRecordBlock)(NCameraManagerResult result, NSString 
  *  Movie
  */
 - (void)startMovieRecordWithBlock:(NCameraManagerResultBlock)block;
-- (void)stopMovieRecordWithFileName:(NSString *)fileName block:(NCameraManagerRecordBlock)block;
+- (void)stopMovieRecordWithFileName:(NSString *)fileName isSave:(BOOL)isSave block:(NCameraManagerRecordBlock)block;
 
 @end

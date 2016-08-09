@@ -18,7 +18,8 @@
 @interface NAudioManager () <AVAudioRecorderDelegate, AVAudioPlayerDelegate>
 @property (nonatomic, assign, readwrite) NAudioManagerQuality quality;
 @property (nonatomic, assign) NAudioManagerFileFormat fileExtension;
-@property (nonatomic, copy) NAudioManagerFinishBlock recordFinishBlock;
+@property (nonatomic, copy) NAudioManagerFinishRecordingBlock recordFinishBlock;
+@property (nonatomic, copy) NAudioManagerFinishPlayingBlock playFinishBlock;
 
 @property (nonatomic, strong) AVAudioRecorder *audioRecorder;
 @property (nonatomic, strong) AVAudioPlayer *audioPlayer;
@@ -231,14 +232,17 @@
     }
 }
 
-- (void)stopRecordWithBlock:(NAudioManagerFinishBlock)block {
+- (void)stopRecordWithBlock:(NAudioManagerFinishRecordingBlock)block {
     self.recordFinishBlock = block;
     [self.audioRecorder stop];
     NSLog(@"--NCMAudioManager--stopAudioRecord--");
 }
 
 #pragma mark - Play INTERFACE
-- (NCameraManagerResult)playWithRelativePath:(NCMFilePathInDirectory)relativePath fileName:(NSString *)fileName error:(NSError **)error {
+- (NCameraManagerResult)playWithRelativePath:(NCMFilePathInDirectory)relativePath
+                                    fileName:(NSString *)fileName
+                                       error:(NSError **)error
+                                 finishBlock:(NAudioManagerFinishPlayingBlock)block {
     NSError *tmpError = nil;
     NSString *fullPathFileName = [NSFileManager NCM_fullPathWithRelativePath:relativePath fileName:fileName error:&tmpError];
     if (!fullPathFileName || tmpError) {
@@ -246,10 +250,10 @@
         return NCameraManagerResultFileFailWithNonExistent;
     }
 
-    return [self playWithFullPathFileName:fullPathFileName error:error];
+    return [self playWithFullPathFileName:fullPathFileName error:error finishBlock:block];
 }
 
-- (NCameraManagerResult)playWithFullPathFileName:(NSString *)fileName error:(NSError **)error {
+- (NCameraManagerResult)playWithFullPathFileName:(NSString *)fileName error:(NSError **)error finishBlock:(NAudioManagerFinishPlayingBlock)block {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *tmpError = nil;
 
@@ -285,6 +289,7 @@
     if ([self.audioPlayer prepareToPlay]) {
         if ([self.audioPlayer play]) {
             self.playPausing = false;
+            self.playFinishBlock = block;
             NSLog(@"--NCMAudioManager--startAudioPlay--");
         } else {
             tmpError = [NSError NCM_errorWithCode:NCameraManagerResultPlayFailWithStartPlay message:@"start playing fail"];
@@ -351,6 +356,11 @@
 }
 
 #pragma mark - AVAudioPlayerDelegate
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    if (self.playFinishBlock) {
+        self.playFinishBlock(flag);
+    }
+}
 
 #pragma mark - property
 - (BOOL)isRecording {

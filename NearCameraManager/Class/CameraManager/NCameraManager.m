@@ -9,7 +9,6 @@
 #import "NCameraManager.h"
 
 @import UIKit;
-@import AVFoundation;
 @import Photos;
 #import "NCameraManagerHeader.h"
 #import "NCameraPreviewView.h"
@@ -17,6 +16,12 @@
 #import "NSError+NCMCustomErrorInstance.h"
 #import "NSFileManager+NCMFileOperationManager.h"
 #import "UIImage+NCMImageScale.h"
+
+typedef NS_OPTIONS(NSUInteger, NCameraManagerDeviceConfigion) {
+    NCameraManagerDeviceConfigionNone = 0,
+    NCameraManagerDeviceConfigionAudio = 1,
+    NCameraManagerDeviceConfigionVideo = 1 << 1,
+};
 
 @interface NCameraManager () <AVCaptureFileOutputRecordingDelegate, AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -35,11 +40,11 @@
 
 // Utilities.
 @property (nonatomic, assign) NCameraManagerResult cameraSetupResult;
-@property (nonatomic, assign) NSInteger configDeviceFlag;
 @property (nonatomic, assign) AVCaptureFlashMode flashMode;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier backgroundRecordingID;
 
 @property (nonatomic, strong) NSString *recordFileName;
+@property (nonatomic, assign) BOOL isSaveRecord;
 @property (nonatomic, copy) NCameraManagerRecordBlock recordFinishBlock;
 
 @property (nonatomic, assign, readonly, getter=isImageStilling) BOOL imageStilling;
@@ -50,8 +55,8 @@
 
 - (void)dealloc {
     NSLog(@"--NCameraManager--dealloc");
-    if (self.isSessionRunning) {
-        [self.session stopRunning];
+    if (_session.isRunning) {
+        [_session stopRunning];
         [self removeObservers];
     }
 }
@@ -66,71 +71,117 @@
 
 static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
 - (BOOL)configInitWithMode:(NCameraManagerMode)mode previewView:(UIView *)previewView authorizationHandle:(NCameraManagerResultBlock)managerResultBlock {
+    /**
+     *  init
+     */
     self.managerMode = mode;
     self.managerResultBlock = managerResultBlock;
     self.previewSupperView = previewView;
     self.previewView = [[NCameraPreviewView alloc] init];
 
+    /**
+     * Session
+     */
     self.session = [[AVCaptureSession alloc] init];
     self.session.sessionPreset = AVCaptureSessionPresetHigh;
     self.previewView.session = self.session;
     self.sessionQueue = dispatch_queue_create(kNCameraManagerSessionqueue, DISPATCH_QUEUE_SERIAL);
-    self.flashMode = AVCaptureFlashModeAuto;
 
+    /**
+     *  previewView
+     */
     self.previewSupperView.clipsToBounds = true;
     self.previewView.frame = previewView.bounds;
+    self.previewView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [previewView addSubview:self.previewView];
     [previewView sendSubviewToBack:self.previewView];
-    self.previewView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
     UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(focusAndExposeTap:)];
     [self.previewView addGestureRecognizer:gesture];
 
+    /**
+     *  Flag
+     */
+    self.cameraSetupResult = NCameraManagerResultFail;
+    self.backgroundRecordingID = UIBackgroundTaskInvalid;
+    self.flashMode = AVCaptureFlashModeAuto;
+
+    /**
+     *  config
+     */
     [self configAuthorization];
     return true;
 }
 
 #pragma mark Device Authorization
-- (void)configAuthorization {
-    self.configDeviceFlag = 0;
+- (void)configAuthorizationWithAuthorizationHandle:(NCameraManagerResultBlock)managerResultBlock {
 
+    dispatch_async(self.sessionQueue, ^{
+
+        if (self.isSessionRunning || self.isMovieRecording || self.isImageStilling) {
+            if (managerResultBlock) {
+                NSError *error = [NSError NCM_errorWithCode:NCameraManagerResultCameraFailWithSessionRuning message:@"Session Runing"];
+                managerResultBlock(NCameraManagerResultCameraFailWithSessionRuning, error);
+            }
+            return;
+        }
+
+        [self.session beginConfiguration];
+        NSArray *inputArray = self.session.inputs;
+        for (AVCaptureInput *input in inputArray) {
+            [self.session removeInput:input];
+        }
+
+        NSArray *outputArray = self.session.outputs;
+        for (AVCaptureOutput *output in outputArray) {
+            [self.session removeOutput:output];
+        }
+        [self.session commitConfiguration];
+
+        self.managerResultBlock = managerResultBlock;
+        [self configAuthorization];
+    });
+}
+
+- (void)configAuthorization {
+
+    __block NCameraManagerDeviceConfigion configDeviceFlag = NCameraManagerDeviceConfigionNone;
     if (self.managerMode == NCameraManagerModeVedio) {
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio
                                  completionHandler:^(BOOL granted) {
-                                     self.configDeviceFlag = self.configDeviceFlag | (1 < 1);
-                                     [self configDevice];
+                                     configDeviceFlag = configDeviceFlag | NCameraManagerDeviceConfigionAudio;
+                                     [self configDevice:configDeviceFlag];
                                  }];
     } else {
-        self.configDeviceFlag = self.configDeviceFlag | (1 < 1);
+        configDeviceFlag = configDeviceFlag | NCameraManagerDeviceConfigionAudio;
     }
 
     [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
                              completionHandler:^(BOOL granted) {
-                                 self.configDeviceFlag = self.configDeviceFlag | (1);
-                                 [self configDevice];
+                                 configDeviceFlag = configDeviceFlag | NCameraManagerDeviceConfigionVideo;
+                                 [self configDevice:configDeviceFlag];
                              }];
 }
 
-- (void)configDevice {
-
+- (void)configDevice:(NCameraManagerDeviceConfigion)configDeviceFlag {
     // Setup the capture session.
     // In general it is not safe to mutate an AVCaptureSession or any of its inputs, outputs, or connections from multiple threads at the same time.
     // Why not do all of this on the main queue?
     // Because -[AVCaptureSession startRunning] is a blocking call which can take a long time. We dispatch session setup to the sessionQueue
     // so that the main queue isn't blocked, which keeps the UI responsive.
     dispatch_async(self.sessionQueue, ^{
-        if (!((self.configDeviceFlag & (1)) && (self.configDeviceFlag & (1 < 1)))) {
+        if (!((configDeviceFlag & NCameraManagerDeviceConfigionAudio) && (configDeviceFlag & NCameraManagerDeviceConfigionVideo))) {
             return;
         }
 
         NSError *error = nil;
-        self.backgroundRecordingID = UIBackgroundTaskInvalid;
         /**
          *  判断是否能加载摄像头
          */
         if ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] != AVAuthorizationStatusAuthorized) {
             self.cameraSetupResult = NCameraManagerResultCameraFailWithCameraConfiguration;
             error = [NSError NCM_errorWithCode:self.cameraSetupResult message:@"Camera Configuration Fail"];
-            [self configBlokcWithError:error];
+            [self configBlokcWithError:error commitFlag:false];
             return;
         }
 
@@ -141,55 +192,48 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
             [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio] != AVAuthorizationStatusAuthorized) {
             self.cameraSetupResult = NCameraManagerResultCameraFailWithAudioConfiguration;
             error = [NSError NCM_errorWithCode:self.cameraSetupResult message:@"Audio Configuration Fail"];
-            [self configBlokcWithError:error];
+            [self configBlokcWithError:error commitFlag:false];
             return;
         }
 
+        [self configConfiguration];
+    });
+}
+
+- (void)configConfiguration {
+    // TODO:需要增加删除功能
+    dispatch_async(self.sessionQueue, ^{
+
+        NSError *error = nil;
         /**
          *  开始配置
          */
         [self.session beginConfiguration];
 
+        /**
+         *  设置摄像头
+         */
         AVCaptureDevice *videoDevice = [NCameraManager deviceWithMediaType:AVMediaTypeVideo preferringPosition:AVCaptureDevicePositionBack];
         AVCaptureDeviceInput *videoDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
         if (!videoDeviceInput || error) {
             self.cameraSetupResult = NCameraManagerResultCameraFailWithCameraDevice;
-            [self configBlokcWithError:error];
+            [self configBlokcWithError:error commitFlag:true];
             return;
         }
 
         if ([self.session canAddInput:videoDeviceInput]) {
             [self.session addInput:videoDeviceInput];
             self.videoDeviceInput = videoDeviceInput;
-
-            /**
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // Why are we dispatching this to the main queue?
-                // Because AVCaptureVideoPreviewLayer is the backing layer for AAPLPreviewView and UIView
-                // can only be manipulated on the main thread.
-                // Note: As an exception to the above rule, it is not necessary to serialize video orientation changes
-                // on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
-
-                // Use the status bar orientation as the initial video orientation. Subsequent orientation changes are handled by
-                // -[viewWillTransitionToSize:withTransitionCoordinator:].
-                UIInterfaceOrientation statusBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
-                AVCaptureVideoOrientation initialVideoOrientation = AVCaptureVideoOrientationPortrait;
-                if (statusBarOrientation != UIInterfaceOrientationUnknown) {
-                    initialVideoOrientation = (AVCaptureVideoOrientation)statusBarOrientation;
-                }
-
-                AVCaptureVideoPreviewLayer *previewLayer = (AVCaptureVideoPreviewLayer *)self.previewView.layer;
-                previewLayer.connection.videoOrientation = initialVideoOrientation;
-            });
-             */
         } else {
             self.cameraSetupResult = NCameraManagerResultCameraFailWithCameraCanNotAddToSession;
             error = [NSError NCM_errorWithCode:self.cameraSetupResult message:@"Could not add video device input to the session"];
-            [self configBlokcWithError:error];
+            [self configBlokcWithError:error commitFlag:true];
             return;
         }
 
-
+        /**
+         *  设置音频
+         */
         if (self.managerMode == NCameraManagerModeVedio) {
             /**
              *  Audio Input
@@ -198,7 +242,7 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
             AVCaptureDeviceInput *audioDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:audioDevice error:&error];
             if (!audioDeviceInput || error) {
                 self.cameraSetupResult = NCameraManagerResultCameraFailWithAudioToSession;
-                [self configBlokcWithError:error];
+                [self configBlokcWithError:error commitFlag:true];
                 return;
             }
 
@@ -207,7 +251,7 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
             } else {
                 self.cameraSetupResult = NCameraManagerResultCameraFailWithAudioCanNotAddToSession;
                 error = [NSError NCM_errorWithCode:self.cameraSetupResult message:@"Could not add audio device input to the session"];
-                [self configBlokcWithError:error];
+                [self configBlokcWithError:error commitFlag:true];
                 return;
             }
 
@@ -223,9 +267,9 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
                 }
                 self.movieFileOutput = movieFileOutput;
             } else {
-                self.cameraSetupResult = NCameraManagerResultCameraFailWithVedioOutput;
+                self.cameraSetupResult = NCameraManagerResultCameraFailWithVideoOutput;
                 error = [NSError NCM_errorWithCode:self.cameraSetupResult message:@"Could not add movie file output to the session"];
-                [self configBlokcWithError:error];
+                [self configBlokcWithError:error commitFlag:true];
                 return;
             }
 
@@ -243,6 +287,7 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
              */
         }
 
+
         /**
          *  Image Output
          */
@@ -254,44 +299,72 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
         } else {
             self.cameraSetupResult = NCameraManagerResultCameraFailWithImageOutput;
             error = [NSError NCM_errorWithCode:self.cameraSetupResult message:@"Could not add still image output to the session"];
-            [self configBlokcWithError:error];
+            [self configBlokcWithError:error commitFlag:true];
             return;
         }
 
-        self.cameraSetupResult = NCameraManagerResultSuccess;
         [self.session commitConfiguration];
 
-        [self configBlokcWithError:nil];
+        self.cameraSetupResult = NCameraManagerResultSuccess;
+        [self configBlokcWithError:nil commitFlag:false];
+
     });
 }
 
-- (void)configBlokcWithError:(NSError *)error {
-    [self.session commitConfiguration];
+- (void)configBlokcWithError:(NSError *)error commitFlag:(BOOL)commitFlag {
+    if (commitFlag) {
+        [self.session commitConfiguration];
+    }
     if (self.managerResultBlock) {
         self.managerResultBlock(self.cameraSetupResult, error);
     }
+
+    self.managerResultBlock = nil;
 }
 
-#pragma mark - Session
+#pragma mark -
+#pragma mark Session
 /**
  *  Runing
  */
-- (void)startRuning {
+- (void)startRuningWithBlock:(NCameraManagerResultBlock)block {
     dispatch_async(self.sessionQueue, ^{
-        if (self.cameraSetupResult == NCameraManagerResultSuccess) {
+        if (self.cameraSetupResult == NCameraManagerResultSuccess && !self.isSessionRunning) {
             [self addObservers];
             [self.session startRunning];
             NSLog(@"--NCameraManager--startRunning--");
+
+            if (block) {
+                block(NCameraManagerResultSuccess, nil);
+            }
+        } else {
+            NSLog(@"--NCameraManager--startRunningFail--");
+            NSError *error =
+                [NSError NCM_errorWithCode:NCameraManagerResultCameraFailWithSessionStartRuning message:@"Session is not finish config or is runing"];
+            if (block) {
+                block(NCameraManagerResultCameraFailWithSessionStartRuning, error);
+            }
         }
     });
 }
 
-- (void)stopRuning {
+- (void)stopRuningWithBlock:(NCameraManagerResultBlock)block {
     dispatch_async(self.sessionQueue, ^{
-        if (self.cameraSetupResult == NCameraManagerResultSuccess) {
+        if (self.cameraSetupResult == NCameraManagerResultSuccess && self.isSessionRunning) {
             [self.session stopRunning];
             [self removeObservers];
             NSLog(@"--NCameraManager--stopRuning--");
+
+            if (block) {
+                block(NCameraManagerResultSuccess, nil);
+            }
+        } else {
+            NSLog(@"--NCameraManager--stopRuningFail--");
+            NSError *error =
+                [NSError NCM_errorWithCode:NCameraManagerResultCameraFailWithSessionStopRuning message:@"Session is not finish config or is not runing"];
+            if (block) {
+                block(NCameraManagerResultCameraFailWithSessionStopRuning, error);
+            }
         }
     });
 }
@@ -301,16 +374,16 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
     return self.videoDeviceInput.device.hasFlash;
 }
 
-- (BOOL)changeFlashmode:(NCameraFlashMode)flashMode error:(NSError **)error {
+- (BOOL)changeFlashmode:(NCameraManagerFlashMode)flashMode error:(NSError **)error {
     AVCaptureFlashMode avFlashMode = AVCaptureFlashModeAuto;
     switch (flashMode) {
-    case NCameraFlashModeAudo:
+    case NCameraManagerFlashModeAudo:
         avFlashMode = AVCaptureFlashModeAuto;
         break;
-    case NCameraFlashModeOn:
+    case NCameraManagerFlashModeOn:
         avFlashMode = AVCaptureFlashModeOn;
         break;
-    case NCameraFlashModeOff:
+    case NCameraManagerFlashModeOff:
         avFlashMode = AVCaptureFlashModeOff;
         break;
     default:
@@ -335,19 +408,18 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
     dispatch_async(self.sessionQueue, ^{
 
         NSError *error = nil;
+        if (self.cameraSetupResult != NCameraManagerResultSuccess) {
+            error = [NSError NCM_errorWithCode:NCameraManagerResultCameraFailWithChangingConfiguration message:@"Changing Configuration Fail"];
+            if (block) {
+                block(NCameraManagerResultCameraFailWithChangingConfiguration, error);
+            }
+            return;
+        }
 
         if (self.isImageStilling || self.movieFileOutput.isRecording) {
             error = [NSError NCM_errorWithCode:NCameraManagerResultCameraFailWithCameraRuning message:@"Camera Runing"];
             if (block) {
                 block(NCameraManagerResultCameraFailWithCameraRuning, error);
-            }
-            return;
-        }
-
-        if (self.cameraSetupResult != NCameraManagerResultSuccess) {
-            error = [NSError NCM_errorWithCode:NCameraManagerResultCameraFailWithCameraRuning message:@"Changing Configuration Fail"];
-            if (block) {
-                block(NCameraManagerResultCameraFailWithChangingConfiguration, error);
             }
             return;
         }
@@ -424,7 +496,7 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
         // Capture a still image.
         [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:connection
                                                            completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
-                                                               if (imageDataSampleBuffer) {
+                                                               if (imageDataSampleBuffer && !error) {
                                                                    // The sample buffer is not retained. Create image data before saving the still image to
                                                                    // the
                                                                    // photo library
@@ -476,7 +548,7 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
 #pragma mark Movie
 - (void)startMovieRecordWithBlock:(NCameraManagerResultBlock)block {
     dispatch_async(self.sessionQueue, ^{
-        if (!self.movieFileOutput.isRecording) {
+        if (!self.movieFileOutput.isRecording && self.cameraSetupResult == NCameraManagerResultSuccess) {
             if ([UIDevice currentDevice].isMultitaskingSupported) {
                 // Setup background task. This is needed because the
                 // -[captureOutput:didFinishRecordingToOutputFileAtURL:fromConnections:error:]
@@ -516,6 +588,9 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
             NSString *outputFileName = [outputFilePath stringByAppendingPathExtension:@"mov"];
             NSURL *fileUrl = [NSURL fileURLWithPath:outputFileName];
             [self.movieFileOutput startRecordingToOutputFileURL:fileUrl recordingDelegate:self];
+            if (block) {
+                block(NCameraManagerResultSuccess, nil);
+            }
         } else {
             if (block) {
                 NSError *error = [NSError NCM_errorWithCode:NCameraManagerResultCameraFailWithRecording message:@"Camera is not still recording"];
@@ -525,11 +600,12 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
     });
 }
 
-- (void)stopMovieRecordWithFileName:(NSString *)fileName block:(NCameraManagerRecordBlock)block {
+- (void)stopMovieRecordWithFileName:(NSString *)fileName isSave:(BOOL)isSave block:(NCameraManagerRecordBlock)block {
     dispatch_async(self.sessionQueue, ^{
-        if (self.movieFileOutput.isRecording) {
+        if (self.movieFileOutput.isRecording && self.cameraSetupResult == NCameraManagerResultSuccess) {
             self.recordFileName = fileName;
             self.recordFinishBlock = block;
+            self.isSaveRecord = isSave;
             [self.movieFileOutput stopRecording];
         } else {
             if (block) {
@@ -562,44 +638,59 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
         }
     };
 
-    BOOL success = YES;
-
-    if (error) {
-        NSLog(@"Movie file finishing error: %@", error);
-        success = [error.userInfo[AVErrorRecordingSuccessfullyFinishedKey] boolValue];
-    }
-    //    if (success) {
-    // Check authorization status.
-    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-        if (status == PHAuthorizationStatusAuthorized) {
-            // Save the movie file to the photo library and cleanup.
-            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-                // In iOS 9 and later, it's possible to move the file into the photo
-                // library without duplicating the file data.
-                // This avoids using double the disk space during save, which can make
-                // a difference on devices with limited free disk space.
-                if ([PHAssetResourceCreationOptions class]) {
-                    PHAssetResourceCreationOptions *options = [[PHAssetResourceCreationOptions alloc] init];
-                    options.shouldMoveFile = YES;
-                    PHAssetCreationRequest *changeRequest = [PHAssetCreationRequest creationRequestForAsset];
-                    [changeRequest addResourceWithType:PHAssetResourceTypeVideo fileURL:outputFileURL options:options];
-                } else {
-                    [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:outputFileURL];
-                }
-            }
-                completionHandler:^(BOOL success, NSError *error) {
-                    if (!success) {
-                        NSLog(@"Could not save movie to photo library: %@", error);
-                    }
-                    cleanup();
-                }];
-        } else {
-            cleanup();
+    NSError *tmpError = nil;
+    NSString *toFullPathFileName =
+        [NSFileManager NCM_fullPathWithRelativePath:NCMFilePathInDirectoryDocumentOriginal fileName:self.recordFileName error:&tmpError];
+    if (!toFullPathFileName || tmpError) {
+        if (self.recordFinishBlock) {
+            self.recordFinishBlock(NCameraManagerResultCameraFailWithFinishRecord, nil, NCMFilePathInDirectoryNone, tmpError);
         }
-    }];
-    //    } else {
-    //        cleanup();
-    //    }
+        return;
+    }
+
+    NSString *originalFileName = [outputFileURL absoluteString];
+    [NSFileManager NCM_moveFileFromOriginalPath:NCMFilePathInDirectoryTemp
+                               originalFileName:[originalFileName lastPathComponent]
+                                         toPath:NCMFilePathInDirectoryDocumentOriginal
+                                     toFileName:[originalFileName lastPathComponent]
+                                         isCopy:true
+                                          block:^(NCameraManagerResult result, NSString *fullPath, NSError *error) {
+                                              if (self.recordFinishBlock) {
+                                                  self.recordFinishBlock(result, fullPath, NCMFilePathInDirectoryDocumentOriginal, error);
+                                              }
+                                          }];
+
+    if (self.isSaveRecord) {
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+            if (status == PHAuthorizationStatusAuthorized) {
+                // Save the movie file to the photo library and cleanup.
+                [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                    // In iOS 9 and later, it's possible to move the file into the photo
+                    // library without duplicating the file data.
+                    // This avoids using double the disk space during save, which can make
+                    // a difference on devices with limited free disk space.
+                    if ([PHAssetResourceCreationOptions class]) {
+                        PHAssetResourceCreationOptions *options = [[PHAssetResourceCreationOptions alloc] init];
+                        options.shouldMoveFile = YES;
+                        PHAssetCreationRequest *changeRequest = [PHAssetCreationRequest creationRequestForAsset];
+                        [changeRequest addResourceWithType:PHAssetResourceTypeVideo fileURL:outputFileURL options:options];
+                    } else {
+                        [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:outputFileURL];
+                    }
+                }
+                    completionHandler:^(BOOL success, NSError *error) {
+                        if (!success) {
+                            NSLog(@"Could not save movie to photo library: %@", error);
+                        }
+                        cleanup();
+                    }];
+            } else {
+                cleanup();
+            }
+        }];
+    } else {
+        cleanup();
+    }
 }
 
 /**
@@ -609,12 +700,6 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
     NSData *imageData = UIImageJPEGRepresentation(image, 1);
     [UIImage NCM_saveImageInPhotosLibraryFromData:imageData];
     NSLog(@"--didOutputSampleBuffer--");
-}
-
-- (void)captureOutput:(AVCaptureOutput *)captureOutput
-  didDropSampleBuffer:(CMSampleBufferRef)sampleBuffer
-       fromConnection:(AVCaptureConnection *)connection NS_AVAILABLE(10_7, 6_0) {
-    NSLog(@"--didDropSampleBuffer--");
 }
  */
 
@@ -654,37 +739,6 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
     });
 }
 
-- (void)deviceOrientationDidChange {
-    if (self.movieFileOutput.isRecording) {
-        return;
-    }
-
-    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
-    deviceOrientation =
-        deviceOrientation == UIDeviceOrientationFaceUp || deviceOrientation == UIDeviceOrientationFaceDown || deviceOrientation == UIDeviceOrientationUnknown
-            ? UIDeviceOrientationPortrait
-            : deviceOrientation;
-    if (UIDeviceOrientationIsPortrait(deviceOrientation) || UIDeviceOrientationIsLandscape(deviceOrientation)) {
-
-        AVCaptureVideoPreviewLayer *previewLayer = (AVCaptureVideoPreviewLayer *)self.previewView.layer;
-        previewLayer.connection.videoOrientation = (AVCaptureVideoOrientation)deviceOrientation;
-
-        CGRect screenRect = [UIScreen mainScreen].bounds;
-        float screenRatio = screenRect.size.width / screenRect.size.height;
-
-        float width = self.previewSupperView.bounds.size.width;
-        float height = self.previewSupperView.bounds.size.height;
-        float viewRatio = width / height;
-
-        if (screenRatio > viewRatio) {
-            width = height * screenRatio;
-        } else {
-            height = width / screenRatio;
-        }
-        self.previewView.layer.bounds = CGRectMake(0, 0, width, height);
-    }
-}
-
 + (AVCaptureDevice *)deviceWithMediaType:(NSString *)mediaType preferringPosition:(AVCaptureDevicePosition)position {
     NSArray *devices = [AVCaptureDevice devicesWithMediaType:mediaType];
     AVCaptureDevice *captureDevice = devices.firstObject;
@@ -697,50 +751,120 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
     return captureDevice;
 }
 
-#pragma mark - KVO and Notifications
+#pragma mark -
+#pragma mark KVO and Notifications
 static void *kNCameraManagerCapturingStillImageContext = &kNCameraManagerCapturingStillImageContext;
 static NSString *const kNCameraManagerCapturingStillImageKVO = @"capturingStillImage";
-
 - (void)addObservers {
-    [self configOrientation];
     [self.stillImageOutput addObserver:self
                             forKeyPath:kNCameraManagerCapturingStillImageKVO
                                options:NSKeyValueObservingOptionNew
                                context:kNCameraManagerCapturingStillImageContext];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(subjectAreaDidChange:)
-                                                 name:AVCaptureDeviceSubjectAreaDidChangeNotification
-                                               object:self.videoDeviceInput.device];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(sessionRuntimeError:)
-                                                 name:AVCaptureSessionRuntimeErrorNotification
-                                               object:self.session];
+    NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+    [notificationCenter addObserver:self selector:@selector(deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
+    [self deviceOrientationDidChangeInital];
+
+    [notificationCenter addObserver:self
+                           selector:@selector(subjectAreaDidChange:)
+                               name:AVCaptureDeviceSubjectAreaDidChangeNotification
+                             object:self.videoDeviceInput.device];
+    [notificationCenter addObserver:self selector:@selector(sessionRuntimeError:) name:AVCaptureSessionRuntimeErrorNotification object:self.session];
+
     // A session can only run when the app is full screen. It will be interrupted in a multi-app layout, introduced in iOS 9,
     // see also the documentation of AVCaptureSessionInterruptionReason. Add observers to handle these session interruptions
     // and show a preview is paused message. See the documentation of AVCaptureSessionWasInterruptedNotification for other
     // interruption reasons.
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(sessionWasInterrupted:)
-                                                 name:AVCaptureSessionWasInterruptedNotification
-                                               object:self.session];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(sessionInterruptionEnded:)
-                                                 name:AVCaptureSessionInterruptionEndedNotification
-                                               object:self.session];
+    //    [notificationCenter addObserver:self selector:@selector(sessionWasInterrupted:) name:AVCaptureSessionWasInterruptedNotification object:self.session];
+    //    [notificationCenter addObserver:self selector:@selector(sessionInterruptionEnded:) name:AVCaptureSessionInterruptionEndedNotification
+    //    object:self.session];
 }
 
 - (void)removeObservers {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-    [self.stillImageOutput removeObserver:self forKeyPath:kNCameraManagerCapturingStillImageKVO context:kNCameraManagerCapturingStillImageContext];
+    [_stillImageOutput removeObserver:self forKeyPath:kNCameraManagerCapturingStillImageKVO context:kNCameraManagerCapturingStillImageContext];
 }
 
 #pragma mark configOrientation
-- (void)configOrientation {
-    NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-    [notificationCenter addObserver:self selector:@selector(deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
-    [self deviceOrientationDidChange];
+- (void)deviceOrientationDidChange {
+    if (self.movieFileOutput.isRecording) {
+        return;
+    }
+
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    if (UIDeviceOrientationIsPortrait(deviceOrientation) || UIDeviceOrientationIsLandscape(deviceOrientation)) {
+        AVCaptureVideoOrientation orientation = AVCaptureVideoOrientationPortrait;
+        switch (deviceOrientation) {
+        case UIDeviceOrientationPortrait:
+            orientation = AVCaptureVideoOrientationPortrait;
+            break;
+
+        case UIDeviceOrientationPortraitUpsideDown:
+            orientation = AVCaptureVideoOrientationPortraitUpsideDown;
+            break;
+
+        case UIDeviceOrientationLandscapeLeft:
+            orientation = AVCaptureVideoOrientationLandscapeLeft;
+            break;
+
+        case UIDeviceOrientationLandscapeRight:
+            orientation = AVCaptureVideoOrientationLandscapeRight;
+            break;
+
+        default:
+            break;
+        }
+
+        [self changePreviewViewOrientation:orientation];
+    }
+}
+
+- (void)deviceOrientationDidChangeInital {
+    UIInterfaceOrientation deviceOrientation = [UIApplication sharedApplication].statusBarOrientation;
+    AVCaptureVideoOrientation orientation = AVCaptureVideoOrientationPortrait;
+
+    switch (deviceOrientation) {
+    case UIInterfaceOrientationPortrait:
+        orientation = AVCaptureVideoOrientationPortrait;
+        break;
+
+    case UIInterfaceOrientationPortraitUpsideDown:
+        orientation = AVCaptureVideoOrientationPortraitUpsideDown;
+        break;
+
+    case UIInterfaceOrientationLandscapeLeft:
+        orientation = AVCaptureVideoOrientationLandscapeLeft;
+        break;
+
+    case UIInterfaceOrientationLandscapeRight:
+        orientation = AVCaptureVideoOrientationLandscapeRight;
+        break;
+
+    default:
+        break;
+    }
+
+    [self changePreviewViewOrientation:orientation];
+}
+
+- (void)changePreviewViewOrientation:(AVCaptureVideoOrientation)orientation {
+
+    AVCaptureVideoPreviewLayer *previewLayer = (AVCaptureVideoPreviewLayer *)self.previewView.layer;
+    previewLayer.connection.videoOrientation = orientation;
+
+    CGRect screenRect = [UIScreen mainScreen].bounds;
+    float screenRatio = screenRect.size.width / screenRect.size.height;
+
+    float width = self.previewSupperView.bounds.size.width;
+    float height = self.previewSupperView.bounds.size.height;
+    float viewRatio = width / height;
+
+    if (screenRatio > viewRatio) {
+        width = height * screenRatio;
+    } else {
+        height = width / screenRatio;
+    }
+    self.previewView.layer.bounds = CGRectMake(0, 0, width, height);
 }
 
 #pragma mark KVO StillImage
@@ -761,7 +885,7 @@ static NSString *const kNCameraManagerCapturingStillImageKVO = @"capturingStillI
     }
 }
 
-#pragma NSNotification
+#pragma mark NSNotification
 - (void)subjectAreaDidChange:(NSNotification *)notification {
     CGPoint devicePoint = CGPointMake(0.5, 0.5);
     [self focusWithMode:AVCaptureFocusModeContinuousAutoFocus
@@ -773,94 +897,6 @@ static NSString *const kNCameraManagerCapturingStillImageKVO = @"capturingStillI
 - (void)sessionRuntimeError:(NSNotification *)notification {
     NSError *error = notification.userInfo[AVCaptureSessionErrorKey];
     NSLog(@"Capture session runtime error: %@", error);
-
-    // Automatically try to restart the session running if media services were
-    // reset and the last start running succeeded.
-    // Otherwise, enable the user to try to resume the session running.
-    if (error.code == AVErrorMediaServicesWereReset) {
-        dispatch_async(self.sessionQueue, ^{
-            if (self.isSessionRunning) {
-                [self.session startRunning];
-            } else {
-                NSLog(@"AVErrorMediaServicesWereReset, session is not runing");
-            }
-        });
-    } else {
-        //        self.resumeButton.hidden = NO;
-    }
-}
-
-- (void)sessionWasInterrupted:(NSNotification *)notification {
-    // In some scenarios we want to enable the user to resume the session running.
-    // For example, if music playback is initiated via control center while using
-    // AVCam,
-    // then the user can let AVCam resume the session running, which will stop
-    // music playback.
-    // Note that stopping music playback in control center will not automatically
-    // resume the session running.
-    // Also note that it is not always possible to resume, see
-    // -[resumeInterruptedSession:].
-    BOOL showResumeButton = NO;
-
-    // In iOS 9 and later, the userInfo dictionary contains information on why the
-    // session was interrupted.
-    if (&AVCaptureSessionInterruptionReasonKey) {
-        AVCaptureSessionInterruptionReason reason = [notification.userInfo[AVCaptureSessionInterruptionReasonKey] integerValue];
-        NSLog(@"Capture session was interrupted with reason %ld", (long)reason);
-
-        if (reason == AVCaptureSessionInterruptionReasonAudioDeviceInUseByAnotherClient ||
-            reason == AVCaptureSessionInterruptionReasonVideoDeviceInUseByAnotherClient) {
-            showResumeButton = YES;
-        } else if (reason == AVCaptureSessionInterruptionReasonVideoDeviceNotAvailableWithMultipleForegroundApps) {
-            // Simply fade-in a label to inform the user that the camera is
-            // unavailable.
-            //            self.cameraUnavailableLabel.hidden = NO;
-            //            self.cameraUnavailableLabel.alpha = 0.0;
-            //            [UIView animateWithDuration:0.25
-            //                             animations:^{
-            //                                 self.cameraUnavailableLabel.alpha = 1.0;
-            //                             }];
-        }
-    } else {
-        NSLog(@"Capture session was interrupted");
-        showResumeButton = ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive);
-    }
-
-    if (showResumeButton) {
-        // Simply fade-in a button to enable the user to try to resume the session
-        // running.
-        //        self.resumeButton.hidden = NO;
-        //        self.resumeButton.alpha = 0.0;
-        //        [UIView animateWithDuration:0.25
-        //                         animations:^{
-        //                             self.resumeButton.alpha = 1.0;
-        //                         }];
-    }
-}
-
-- (void)sessionInterruptionEnded:(NSNotification *)notification {
-    NSLog(@"Capture session interruption ended");
-
-    /*
-     if (!self.resumeButton.hidden) {
-     [UIView animateWithDuration:0.25
-     animations:^{
-     self.resumeButton.alpha = 0.0;
-     }
-     completion:^(BOOL finished) {
-     self.resumeButton.hidden = YES;
-     }];
-     }
-     if (!self.cameraUnavailableLabel.hidden) {
-     [UIView animateWithDuration:0.25
-     animations:^{
-     self.cameraUnavailableLabel.alpha = 0.0;
-     }
-     completion:^(BOOL finished) {
-     self.cameraUnavailableLabel.hidden = YES;
-     }];
-     }
-     */
 }
 
 #pragma mark - Property
@@ -868,12 +904,12 @@ static NSString *const kNCameraManagerCapturingStillImageKVO = @"capturingStillI
     return self.session.isRunning;
 }
 
-- (BOOL)isImageStilling {
-    return self.stillImageOutput.isCapturingStillImage;
-}
-
 - (BOOL)isMovieRecording {
     return self.movieFileOutput.isRecording;
+}
+
+- (BOOL)isImageStilling {
+    return self.stillImageOutput.isCapturingStillImage;
 }
 
 @end

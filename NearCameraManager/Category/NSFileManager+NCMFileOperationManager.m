@@ -14,6 +14,7 @@
 #import "NSError+NCMCustomErrorInstance.h"
 
 @implementation NSFileManager (NCMFileOperationManager)
+static NSString *const kNCameraManagerFileNamePrefix = @"NCM";
 
 #pragma mark - Clear File Operate
 /**

@@ -8,14 +8,16 @@
 
 #import "NMainViewController.h"
 
+@import AVFoundation;
 #import "NAudioConvertManager.h"
 #import "NAudioManager.h"
+#import "NCameraManager.h"
+#import "NCameraManagerDefaultViewController.h"
 #import "NCameraManagerHeader.h"
-#import "NTmpViewController.h"
 
-@import AVFoundation;
 #import "NSError+NCMCustomErrorInstance.h"
 #import "NSFileManager+NCMFileOperationManager.h"
+
 
 @interface NMainViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -26,6 +28,8 @@
 
 @property (nonatomic, strong) NSString *recordFullPath;
 @property (nonatomic, strong) NSString *lastFileName;
+
+@property (nonatomic, strong) NCameraManager *cameraManager;
 @end
 
 @implementation NMainViewController
@@ -45,15 +49,23 @@
 - (void)configUI {
     self.title = @"首页";
     self.tableView.tableFooterView = [[UIView alloc] init];
+    self.tableView.alpha = 0.5;
 }
 
 - (void)configData {
     self.audioManager = [NAudioManager audioManagerWithFileFormat:NAudioManagerFileFormatCAF quality:NAudioManagerQualityHigh];
+    [self.audioManager addObserver:self forKeyPath:@"quality" options:NSKeyValueObservingOptionNew context:""];
+
+    self.cameraManager = [NCameraManager cameraManagerAuthorizationWithMode:NCameraManagerModeVedio
+                                                                previewView:self.view
+                                                        authorizationHandle:^(NCameraManagerResult result, NSError *error) {
+                                                            NSLog(@"--cameraManager--result = %ld--error = %@", result, error);
+                                                        }];
 }
 
 #pragma mark - UITableViewDelegate & UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 10;
+    return 20;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -84,9 +96,29 @@
         string = @"结束";
         break;
 
-    case 7:
-        string = @"摄像";
+    case 9:
+        string = @"push界面";
         break;
+
+    case 10:
+        string = @"开始";
+        break;
+    case 11:
+        string = @"重新设置";
+        break;
+    case 12:
+        string = @"拍照";
+        break;
+    case 13:
+        string = @"开始录像";
+        break;
+    case 14:
+        string = @"结束录像";
+        break;
+    case 15:
+        string = @"结束";
+        break;
+
     default:
         string = [@(indexPath.row) description];
         break;
@@ -149,7 +181,11 @@
 
     if (indexPath.row == 4) {
         NSLog(@"%@", self.lastFileName);
-        [self.audioManager playWithFullPathFileName:self.lastFileName error:nil];
+        [self.audioManager playWithFullPathFileName:self.lastFileName
+                                              error:nil
+                                        finishBlock:^(BOOL success) {
+                                            NSLog(@"success = %d", success);
+                                        }];
     }
 
     if (indexPath.row == 5) {
@@ -164,8 +200,109 @@
      *
      */
     if (indexPath.row == 7) {
-        
+        //        NSLog(@"%ld", [self.audioManager xxx]);
     }
+
+    if (indexPath.row == 8) {
+        NSLog(@"self = %@", self);
+        NSLog(@"self.audioManager = %@", self.audioManager);
+
+        id info = self.audioManager.observationInfo;
+        NSLog(@"%@", info);
+        NSArray *array = [info valueForKey:@"_observances"];
+        NSLog(@"%@", array);
+
+        id objc = [array lastObject];
+        NSLog(@"%@", objc);
+
+        id Properties = [objc valueForKeyPath:@"_property"];
+        NSLog(@"%@", Properties);
+
+        NSString *keyPath = [Properties valueForKeyPath:@"_keyPath"];
+        NSLog(@"%@", keyPath);
+
+        //        id infoXXX = [self.audioManager valueForKey:@"observationInfo"];
+        //        NSLog(@"%@", infoXXX);
+    }
+
+    
+    /**
+     *
+     */
+    if (indexPath.row == 9) {
+        NCameraManagerDefaultViewController *vc = [[NCameraManagerDefaultViewController alloc] init];
+        [self.navigationController pushViewController:vc animated:true];
+    }
+
+    if (indexPath.row == 10) {
+        [self.cameraManager startRuningWithBlock:^(NCameraManagerResult result, NSError *error) {
+            NSLog(@"--10--result = %ld--error = %@", result, error);
+        }];
+    }
+
+    if (indexPath.row == 11) {
+        [self.cameraManager configAuthorizationWithAuthorizationHandle:^(NCameraManagerResult result, NSError *error) {
+            NSLog(@"--11--result = %ld--error = %@", result, error);
+        }];
+    }
+
+    if (indexPath.row == 12) {
+        [self.cameraManager snapStillImageIsSaveToPhotoLibrary:true
+                                                   imageHandle:^(NCameraManagerResult result, UIImage *image, NSError *error) {
+                                                       NSLog(@"--12--result = %ld--error = %@", result, error);
+                                                   }];
+    }
+
+    if (indexPath.row == 13) {
+        [self.cameraManager startMovieRecordWithBlock:^(NCameraManagerResult result, NSError *error) {
+            NSLog(@"--13--result = %ld--error = %@", result, error);
+        }];
+    }
+
+    if (indexPath.row == 14) {
+        [self.cameraManager
+            stopMovieRecordWithFileName:nil
+                                 isSave:true
+                                  block:^(NCameraManagerResult result, NSString *fileFullPath, NCMFilePathInDirectory directory, NSError *error) {
+
+                                      NSLog(@"--14\n--result = %ld\n--error = %@\n--fileFullPath = %@\n--NCMFilePathInDirectory = %ld", result, error,
+                                            fileFullPath, directory);
+                                      [NSFileManager NCM_moveFileFromOriginalPath:directory
+                                                                 originalFileName:[fileFullPath lastPathComponent]
+                                                                           toPath:NCMFilePathInDirectoryDocument
+                                                                       toFileName:[fileFullPath lastPathComponent]
+                                                                           isCopy:false
+                                                                            block:^(NCameraManagerResult result, NSString *fullPath, NSError *error) {
+                                                                                NSLog(@"--14--xxx\n--result = %ld\n--error = %@\n--fullPath = %@", result,
+                                                                                      error, fullPath);
+                                                                            }];
+                                  }];
+    }
+
+    if (indexPath.row == 15) {
+        [self.cameraManager stopRuningWithBlock:^(NCameraManagerResult result, NSError *error) {
+            NSLog(@"--15--result = %ld--error = %@", result, error);
+        }];
+    }
+
+    // case 10:
+    //    string = @"开始";
+    //    break;
+    // case 11:
+    //    string = @"重新设置";
+    //    break;
+    // case 12:
+    //    string = @"拍照";
+    //    break;
+    // case 13:
+    //    string = @"开始录像";
+    //    break;
+    // case 14:
+    //    string = @"结束录像";
+    //    break;
+    // case 15:
+    //    string = @"结束";
+    //    break;
 }
 
 @end

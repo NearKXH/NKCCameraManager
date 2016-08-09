@@ -49,7 +49,7 @@ typedef void (^NCMFileManagerMoveFileBlock)(NCameraManagerResult result, NSStrin
  *  @param originalPath
  *  @param originalFileName from file name, if nil or equal to @"", return Fail
  *  @param toPath
- *  @param toFileName       to file name, if nil, default NCameraManagerFileNamePrefix_(NSInteger)[NSDate date].timeIntervalSince1970]
+ *  @param toFileName       to file name, if nil, default NCM_(NSInteger)[NSDate date].timeIntervalSince1970]
  *  @param isCopy           if true, copy file, otherwise move
  *  @param block
  */
@@ -66,7 +66,7 @@ typedef void (^NCMFileManagerMoveFileBlock)(NCameraManagerResult result, NSStrin
  *  file name : relativePath_(NSInteger)[[NSDate date] timeIntervalSince1970]
  *
  *  @param relativePath
- *  @param prefix       prefix of file name , if nil, default NCameraManagerFileNamePrefix
+ *  @param prefix       prefix of file name , if nil, default NCM
  *  @param error
  *
  *  @return
@@ -77,7 +77,7 @@ typedef void (^NCMFileManagerMoveFileBlock)(NCameraManagerResult result, NSStrin
  *  full path
  *
  *  @param relativePath
- *  @param fileName     if nil, default NCameraManagerFileNamePrefix_(NSInteger)[[NSDate date] timeIntervalSince1970]
+ *  @param fileName     if nil, default NCM_(NSInteger)[[NSDate date] timeIntervalSince1970]
  *  @param error
  *
  *  @return
