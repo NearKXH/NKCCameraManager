@@ -52,21 +52,18 @@ typedef NS_ENUM(NSInteger, NCameraManagerResult) {
     NCameraManagerResultCameraFailWithCameraConfiguration = -4001,      //摄像头加载失败，没有授权
     NCameraManagerResultCameraFailWithCameraDevice = -4002,             //摄像头硬件加载失败
     NCameraManagerResultCameraFailWithCameraCanNotAddToSession = -4003, //摄像头添加失败
+    NCameraManagerResultCameraFailWithAudioConfiguration = -5001,       //录音加载失败，没有授权
+    NCameraManagerResultCameraFailWithAudioToSession = -50002,          //麦克风硬件加载失败
+    NCameraManagerResultCameraFailWithAudioCanNotAddToSession = -5003,  //麦克风添加失败
+    NCameraManagerResultCameraFailWithChangingConfiguration = -4004,    //摄像头设置未成功
+    NCameraManagerResultCameraFailWithImageOutput = -4005,              //输出图片失败
+    NCameraManagerResultCameraFailWithVideoOutput = -4006,              //输出录像失败
 
-    NCameraManagerResultCameraFailWithAudioConfiguration = -5001,      //录音加载失败，没有授权
-    NCameraManagerResultCameraFailWithAudioToSession = -50002,         //麦克风硬件加载失败
-    NCameraManagerResultCameraFailWithAudioCanNotAddToSession = -5003, //麦克风添加失败
-
-    NCameraManagerResultCameraFailWithVideoOutput = -4004, //输出录像失败
-    NCameraManagerResultCameraFailWithImageOutput = -4005, //输出图片失败
-
-    NCameraManagerResultCameraFailWithSessionStartRuning = -4006, //开始
-    NCameraManagerResultCameraFailWithSessionStopRuning = -4007,  //结束
-
-    NCameraManagerResultCameraFailWithChangingConfiguration = -4008, //摄像头设置未成功
-    NCameraManagerResultCameraFailWithCameraRuning = -4009,          //摄像头正在运作
-
-    NCameraManagerResultCameraFailWithSessionRuning = -4010, //流正在运作
+    NCameraManagerResultCameraFailWithFlashChanging = -4801,      //改变闪光灯失败
+    NCameraManagerResultCameraFailWithCameraRuning = -4802,       //摄像头正在运作
+    NCameraManagerResultCameraFailWithSessionRuning = -4900,      //流正在运作
+    NCameraManagerResultCameraFailWithSessionStartRuning = -4901, //开始
+    NCameraManagerResultCameraFailWithSessionStopRuning = -4902,  //结束
 
     NCameraManagerResultCameraFailWithStillImage = -4101,   //拍照失败
     NCameraManagerResultCameraFailWithStartRecord = -4201,  //

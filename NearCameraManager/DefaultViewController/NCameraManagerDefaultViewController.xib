@@ -7,8 +7,19 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="NCameraManagerDefaultViewController">
             <connections>
+                <outlet property="cameraAudioButton" destination="rln-LQ-6rZ" id="SWl-MN-fmO"/>
+                <outlet property="cameraAudioTimerLabel" destination="fV2-1N-6a1" id="evp-qR-9PB"/>
+                <outlet property="cameraAudioTimerShowView" destination="nD3-bF-tPk" id="Sck-c9-Od1"/>
+                <outlet property="cameraAudioTimerView" destination="WjL-US-K0G" id="i3M-PD-tQX"/>
+                <outlet property="cameraBottomView" destination="kLl-ek-ivl" id="Tao-fm-iga"/>
                 <outlet property="cameraFlashButton" destination="eQT-kk-exY" id="wrE-Kd-uzV"/>
+                <outlet property="cameraHDRButton" destination="xa3-TE-wND" id="Kuy-Cz-rEU"/>
                 <outlet property="cameraPreviewView" destination="9V8-DV-kS3" id="3gK-f1-8ZB"/>
+                <outlet property="cameraTopView" destination="wOe-Bn-1dq" id="dBX-YH-qjx"/>
+                <outlet property="cameraVideoButton" destination="tNN-2I-tJd" id="BLx-Ky-jbw"/>
+                <outlet property="cameraVideoTimerLabel" destination="m8L-RR-tq6" id="JmE-XH-Fje"/>
+                <outlet property="cameraVideoTimerShowView" destination="cgo-7o-5Y9" id="gHI-Og-PAY"/>
+                <outlet property="cameraVideoTimerView" destination="ioS-zh-Nai" id="FF5-KY-bVf"/>
                 <outlet property="view" destination="HQK-tR-NSz" id="aBi-Z0-VBz"/>
             </connections>
         </placeholder>
@@ -18,7 +29,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wOe-Bn-1dq">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1T3-Rz-nYV">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="20"/>
@@ -28,15 +39,43 @@
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rTR-b0-nSU">
-                            <rect key="frame" x="0.0" y="20" width="375" height="30"/>
+                            <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                             <subviews>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nDg-43-LhC">
+                                    <rect key="frame" x="0.0" y="0.0" width="125" height="44"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eQT-kk-exY">
+                                            <rect key="frame" x="32" y="7" width="60" height="30"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Auto" image="lightning-on">
+                                                <color key="titleColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="changeFlashAction:" destination="-1" eventType="touchUpInside" id="DgB-6D-Lh6"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <constraints>
+                                        <constraint firstItem="eQT-kk-exY" firstAttribute="centerX" secondItem="nDg-43-LhC" secondAttribute="centerX" id="MnD-6i-XbP"/>
+                                        <constraint firstItem="eQT-kk-exY" firstAttribute="centerY" secondItem="nDg-43-LhC" secondAttribute="centerY" id="WDu-7Y-CVB"/>
+                                    </constraints>
+                                </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5ij-1d-Ac8">
-                                    <rect key="frame" x="125" y="0.0" width="125" height="30"/>
+                                    <rect key="frame" x="125" y="0.0" width="125" height="44"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xa3-TE-wND">
-                                            <rect key="frame" x="48" y="1" width="30" height="29"/>
+                                            <rect key="frame" x="48" y="8" width="30" height="29"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <state key="normal" title="HDR"/>
+                                            <state key="normal" title="HDR">
+                                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <state key="selected">
+                                                <color key="titleColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            </state>
+                                            <state key="highlighted">
+                                                <color key="titleColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            </state>
                                         </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -46,10 +85,10 @@
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eeO-aO-38M">
-                                    <rect key="frame" x="250" y="0.0" width="125" height="30"/>
+                                    <rect key="frame" x="250" y="0.0" width="125" height="44"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iyf-nx-aRI">
-                                            <rect key="frame" x="48" y="0.0" width="30" height="30"/>
+                                            <rect key="frame" x="48" y="7" width="30" height="30"/>
                                             <state key="normal" image="rotate"/>
                                             <connections>
                                                 <action selector="changeCameraAction:" destination="-1" eventType="touchUpInside" id="aW0-Me-CLp"/>
@@ -60,24 +99,6 @@
                                     <constraints>
                                         <constraint firstItem="iyf-nx-aRI" firstAttribute="centerY" secondItem="eeO-aO-38M" secondAttribute="centerY" id="F0a-Uy-CaG"/>
                                         <constraint firstItem="iyf-nx-aRI" firstAttribute="centerX" secondItem="eeO-aO-38M" secondAttribute="centerX" id="Jl8-IH-eDl"/>
-                                    </constraints>
-                                </view>
-                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nDg-43-LhC">
-                                    <rect key="frame" x="0.0" y="0.0" width="125" height="30"/>
-                                    <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eQT-kk-exY">
-                                            <rect key="frame" x="32" y="0.0" width="60" height="30"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <state key="normal" title="Auto" image="lightning"/>
-                                            <connections>
-                                                <action selector="changeFlashAction:" destination="-1" eventType="touchUpInside" id="DgB-6D-Lh6"/>
-                                            </connections>
-                                        </button>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                    <constraints>
-                                        <constraint firstItem="eQT-kk-exY" firstAttribute="centerX" secondItem="nDg-43-LhC" secondAttribute="centerX" id="MnD-6i-XbP"/>
-                                        <constraint firstItem="eQT-kk-exY" firstAttribute="centerY" secondItem="nDg-43-LhC" secondAttribute="centerY" id="WDu-7Y-CVB"/>
                                     </constraints>
                                 </view>
                             </subviews>
@@ -103,7 +124,7 @@
                         <constraint firstItem="1T3-Rz-nYV" firstAttribute="top" secondItem="wOe-Bn-1dq" secondAttribute="top" id="6ph-Ia-0fZ"/>
                         <constraint firstItem="1T3-Rz-nYV" firstAttribute="leading" secondItem="rTR-b0-nSU" secondAttribute="trailing" id="Afj-a8-87g"/>
                         <constraint firstAttribute="bottom" secondItem="rTR-b0-nSU" secondAttribute="bottom" id="DA5-A4-6BU"/>
-                        <constraint firstAttribute="height" constant="50" id="I0c-RN-zan"/>
+                        <constraint firstAttribute="height" constant="64" id="I0c-RN-zan"/>
                         <constraint firstAttribute="trailing" secondItem="rTR-b0-nSU" secondAttribute="trailing" id="M8a-7Y-ELq"/>
                         <constraint firstItem="1T3-Rz-nYV" firstAttribute="leading" secondItem="wOe-Bn-1dq" secondAttribute="leading" id="cLn-zA-QVw"/>
                         <constraint firstItem="rTR-b0-nSU" firstAttribute="leading" secondItem="wOe-Bn-1dq" secondAttribute="leading" id="jxc-9I-X0e"/>
@@ -117,10 +138,10 @@
                     </variation>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9V8-DV-kS3">
-                    <rect key="frame" x="0.0" y="50" width="375" height="547"/>
+                    <rect key="frame" x="0.0" y="64" width="375" height="533"/>
                     <subviews>
                         <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WjL-US-K0G">
-                            <rect key="frame" x="208" y="488" width="117" height="51"/>
+                            <rect key="frame" x="208" y="474" width="117" height="51"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fV2-1N-6a1">
                                     <rect key="frame" x="44" y="17" width="61" height="17"/>
@@ -148,7 +169,7 @@
                             </constraints>
                         </view>
                         <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ioS-zh-Nai">
-                            <rect key="frame" x="51" y="488" width="117" height="51"/>
+                            <rect key="frame" x="51" y="474" width="117" height="51"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m8L-RR-tq6">
                                     <rect key="frame" x="44" y="17" width="61" height="17"/>
@@ -176,7 +197,7 @@
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GxE-7V-IPV">
-                            <rect key="frame" x="188" y="531" width="0.0" height="8"/>
+                            <rect key="frame" x="188" y="517" width="0.0" height="8"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="width" id="jf2-Is-eIs"/>
@@ -197,6 +218,17 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kLl-ek-ivl">
                     <rect key="frame" x="0.0" y="597" width="375" height="70"/>
                     <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tNN-2I-tJd">
+                            <rect key="frame" x="82" y="5" width="60" height="60"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="60" id="VcC-Uj-zgp"/>
+                                <constraint firstAttribute="height" constant="60" id="Xda-QY-zhL"/>
+                            </constraints>
+                            <state key="normal" image="audio"/>
+                            <connections>
+                                <action selector="videoRecordAction:" destination="-1" eventType="touchUpInside" id="X7B-6X-35S"/>
+                            </connections>
+                        </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Ms-HS-3cl">
                             <rect key="frame" x="158" y="5" width="60" height="60"/>
                             <constraints>
@@ -208,14 +240,6 @@
                                 <action selector="stillImageAction:" destination="-1" eventType="touchUpInside" id="qQF-93-t34"/>
                             </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tNN-2I-tJd">
-                            <rect key="frame" x="82" y="5" width="60" height="60"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="60" id="VcC-Uj-zgp"/>
-                                <constraint firstAttribute="height" constant="60" id="Xda-QY-zhL"/>
-                            </constraints>
-                            <state key="normal" image="audio"/>
-                        </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rln-LQ-6rZ">
                             <rect key="frame" x="234" y="5" width="60" height="60"/>
                             <constraints>
@@ -225,6 +249,9 @@
                             <state key="normal" image="audio"/>
                             <state key="selected" image="audio-on"/>
                             <state key="highlighted" image="audio-on"/>
+                            <connections>
+                                <action selector="audioRecordAction:" destination="-1" eventType="touchUpInside" id="d82-P3-qLF"/>
+                            </connections>
                         </button>
                     </subviews>
                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -267,7 +294,7 @@
     <resources>
         <image name="audio" width="60" height="60"/>
         <image name="audio-on" width="60" height="60"/>
-        <image name="lightning" width="30" height="30"/>
+        <image name="lightning-on" width="30" height="30"/>
         <image name="rotate" width="30" height="30"/>
     </resources>
 </document>

@@ -54,7 +54,6 @@
 
 - (void)configData {
     self.audioManager = [NAudioManager audioManagerWithFileFormat:NAudioManagerFileFormatCAF quality:NAudioManagerQualityHigh];
-    [self.audioManager addObserver:self forKeyPath:@"quality" options:NSKeyValueObservingOptionNew context:""];
 
     self.cameraManager = [NCameraManager cameraManagerAuthorizationWithMode:NCameraManagerModeVedio
                                                                 previewView:self.view
@@ -200,7 +199,14 @@
      *
      */
     if (indexPath.row == 7) {
-        //        NSLog(@"%ld", [self.audioManager xxx]);
+
+        [NSFileManager NCM_clearFileWithRelativePath:NCMFilePathInDirectoryDocumentOriginal fileName:nil error:nil];
+
+        NSString *secondString = [NSString stringWithFormat:@"%02ld", (long)20];
+        NSString *minuteString = [NSString stringWithFormat:@"%02ld", (long)2];
+        NSString *hoursString = [NSString stringWithFormat:@"%02ld", (long)234];
+
+        NSLog(@"%@--%@--%@--", secondString, minuteString, hoursString);
     }
 
     if (indexPath.row == 8) {
@@ -225,7 +231,7 @@
         //        NSLog(@"%@", infoXXX);
     }
 
-    
+
     /**
      *
      */

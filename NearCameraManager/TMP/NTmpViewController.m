@@ -8,7 +8,7 @@
 
 #import "NTmpViewController.h"
 
-#import "NCameraManagerHeader.h"
+#import "NCameraManagerDefaultViewController.h"
 #import "NMainViewController.h"
 
 @interface NTmpViewController ()
@@ -22,34 +22,34 @@
     NSLog(@"--NTmpViewController--dealloc--");
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:false animated:true];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
 
     [self configUI];
     [self configData];
-    [self configAF];
 }
 
 - (void)configUI {
-    //    self.audioManager = [NCMAudioManager audioManagerWithFileFormat:NAudioManagerFileFormatAAC quality:NAudioManagerQualityLow resultBlock:nil];
-    //    __weak NTmpViewController *weakSelf = self;
-    //    [self.audioManager stopRecordWithBlock:^(NCameraManagerResult result, NSString *fullPathFileName, NSError *error) {
-    //        weakSelf.string = @"qwee";
-    //        NSLog(@"--%@--", weakSelf.string);
-    //
-    //    }];
+    [self setEdgesForExtendedLayout:UIRectEdgeNone];
 }
 
 - (void)configData {
 }
 
-- (void)configAF {
-}
-
 - (IBAction)tmpAction:(id)sender {
     NMainViewController *VC = [[NMainViewController alloc] init];
     [self.navigationController pushViewController:VC animated:YES];
+}
+
+- (IBAction)pushAction:(id)sender {
+    NCameraManagerDefaultViewController *vc = [[NCameraManagerDefaultViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:true];
 }
 
 @end

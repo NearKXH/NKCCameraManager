@@ -400,6 +400,10 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
         self.flashMode = flashMode;
         return true;
     }
+
+    if (error && !*error) {
+        *error = [NSError NCM_errorWithCode:NCameraManagerResultCameraFailWithFlashChanging message:@"Current Camera Device Do Not Suppoer Flash!"];
+    }
     return false;
 }
 
@@ -631,66 +635,57 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
     // will not overwrite a recording currently being saved.
     UIBackgroundTaskIdentifier currentBackgroundRecordingID = self.backgroundRecordingID;
     self.backgroundRecordingID = UIBackgroundTaskInvalid;
-
     dispatch_block_t cleanup = ^{
         if (currentBackgroundRecordingID != UIBackgroundTaskInvalid) {
             [[UIApplication sharedApplication] endBackgroundTask:currentBackgroundRecordingID];
         }
     };
 
-    NSError *tmpError = nil;
-    NSString *toFullPathFileName =
-        [NSFileManager NCM_fullPathWithRelativePath:NCMFilePathInDirectoryDocumentOriginal fileName:self.recordFileName error:&tmpError];
-    if (!toFullPathFileName || tmpError) {
-        if (self.recordFinishBlock) {
-            self.recordFinishBlock(NCameraManagerResultCameraFailWithFinishRecord, nil, NCMFilePathInDirectoryNone, tmpError);
-        }
-        return;
-    }
-
     NSString *originalFileName = [outputFileURL absoluteString];
     [NSFileManager NCM_moveFileFromOriginalPath:NCMFilePathInDirectoryTemp
                                originalFileName:[originalFileName lastPathComponent]
                                          toPath:NCMFilePathInDirectoryDocumentOriginal
-                                     toFileName:[originalFileName lastPathComponent]
-                                         isCopy:true
+                                     toFileName:self.recordFileName ?: [originalFileName lastPathComponent]
+                                         isCopy:false
                                           block:^(NCameraManagerResult result, NSString *fullPath, NSError *error) {
+
                                               if (self.recordFinishBlock) {
                                                   self.recordFinishBlock(result, fullPath, NCMFilePathInDirectoryDocumentOriginal, error);
                                               }
-                                          }];
 
-    if (self.isSaveRecord) {
-        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-            if (status == PHAuthorizationStatusAuthorized) {
-                // Save the movie file to the photo library and cleanup.
-                [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-                    // In iOS 9 and later, it's possible to move the file into the photo
-                    // library without duplicating the file data.
-                    // This avoids using double the disk space during save, which can make
-                    // a difference on devices with limited free disk space.
-                    if ([PHAssetResourceCreationOptions class]) {
-                        PHAssetResourceCreationOptions *options = [[PHAssetResourceCreationOptions alloc] init];
-                        options.shouldMoveFile = YES;
-                        PHAssetCreationRequest *changeRequest = [PHAssetCreationRequest creationRequestForAsset];
-                        [changeRequest addResourceWithType:PHAssetResourceTypeVideo fileURL:outputFileURL options:options];
-                    } else {
-                        [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:outputFileURL];
-                    }
-                }
-                    completionHandler:^(BOOL success, NSError *error) {
-                        if (!success) {
-                            NSLog(@"Could not save movie to photo library: %@", error);
-                        }
-                        cleanup();
-                    }];
-            } else {
-                cleanup();
-            }
-        }];
-    } else {
-        cleanup();
-    }
+                                              if (self.isSaveRecord && result == NCameraManagerResultSuccess && !error) {
+                                                  NSURL *toUrl = [NSURL fileURLWithPath:fullPath];
+                                                  [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                                                      if (status == PHAuthorizationStatusAuthorized) {
+                                                          // Save the movie file to the photo library and cleanup.
+                                                          [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                                                              // In iOS 9 and later, it's possible to move the file into the photo
+                                                              // library without duplicating the file data.
+                                                              // This avoids using double the disk space during save, which can make
+                                                              // a difference on devices with limited free disk space.
+                                                              if ([PHAssetResourceCreationOptions class]) {
+                                                                  PHAssetResourceCreationOptions *options = [[PHAssetResourceCreationOptions alloc] init];
+                                                                  options.shouldMoveFile = YES;
+                                                                  PHAssetCreationRequest *changeRequest = [PHAssetCreationRequest creationRequestForAsset];
+                                                                  [changeRequest addResourceWithType:PHAssetResourceTypeVideo fileURL:toUrl options:options];
+                                                              } else {
+                                                                  [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:toUrl];
+                                                              }
+                                                          }
+                                                              completionHandler:^(BOOL success, NSError *error) {
+                                                                  if (!success) {
+                                                                      NSLog(@"Could not save movie to photo library: %@", error);
+                                                                  }
+                                                                  cleanup();
+                                                              }];
+                                                      } else {
+                                                          cleanup();
+                                                      }
+                                                  }];
+                                              } else {
+                                                  cleanup();
+                                              }
+                                          }];
 }
 
 /**

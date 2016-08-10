@@ -15,15 +15,28 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UK0-ZZ-jVD">
-                    <rect key="frame" x="164" y="95" width="46" height="30"/>
-                    <state key="normal" title="Button"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UK0-ZZ-jVD">
+                    <rect key="frame" x="171" y="30" width="33" height="30"/>
+                    <state key="normal" title="Main"/>
                     <connections>
                         <action selector="tmpAction:" destination="-1" eventType="touchUpInside" id="Ztw-a0-rlG"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GBv-C4-zt6">
+                    <rect key="frame" x="170" y="90" width="35" height="30"/>
+                    <state key="normal" title="Push"/>
+                    <connections>
+                        <action selector="pushAction:" destination="-1" eventType="touchUpInside" id="jYn-4i-h7C"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="UK0-ZZ-jVD" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="30" id="840-Kj-nf1"/>
+                <constraint firstItem="GBv-C4-zt6" firstAttribute="top" secondItem="UK0-ZZ-jVD" secondAttribute="bottom" constant="30" id="Ynt-G5-ZSa"/>
+                <constraint firstItem="UK0-ZZ-jVD" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="aeY-g1-Fzc"/>
+                <constraint firstItem="GBv-C4-zt6" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="qbT-pN-zw2"/>
+            </constraints>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
         </view>
     </objects>

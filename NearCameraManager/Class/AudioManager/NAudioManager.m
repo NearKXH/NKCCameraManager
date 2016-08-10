@@ -33,7 +33,7 @@
 @implementation NAudioManager
 
 - (void)dealloc {
-    NSLog(@"--NCMAudioManager--dealloc--");
+    NSLog(@"--NAudioManager--dealloc--");
     [self removeObservers];
 }
 
