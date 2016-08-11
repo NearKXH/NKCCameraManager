@@ -10,6 +10,7 @@
 
 #import "NAudioManager.h"
 #import "NCameraManager.h"
+#import "NPlayListViewController.h"
 
 #import "NSFileManager+NCMFileOperationManager.h"
 #import "UIImage+NCMImageScale.h"
@@ -21,7 +22,7 @@
 
 @property (weak, nonatomic) IBOutlet UIView *cameraPreviewView;
 @property (weak, nonatomic) IBOutlet UIView *cameraAudioTimerView;
-@property (weak, nonatomic) IBOutlet UIView *cameraAudioTimerShowView;
+@property (weak, nonatomic) IBOutlet UIButton *cameraAudioTimerPauseButton;
 @property (weak, nonatomic) IBOutlet UILabel *cameraAudioTimerLabel;
 @property (weak, nonatomic) IBOutlet UIView *cameraVideoTimerView;
 @property (weak, nonatomic) IBOutlet UIView *cameraVideoTimerShowView;
@@ -45,6 +46,15 @@
 
 - (void)dealloc {
     [self removeAllTimer];
+    if ([_cameraManager isMovieRecording]) {
+        [_cameraManager
+            stopMovieRecordWithFileName:nil
+                                 isSave:false
+                                  block:^(NCameraManagerResult result, NSString *fileFullPath, NCMFilePathInDirectory directory, NSError *error) {
+                                      NSLog(@"--stopMovieRecordWithFileName\n--result = %ld\n--fileFullPath = %@\n--relativeDirectory = %ld\n--error = %@",
+                                            result, fileFullPath, directory, error);
+                                  }];
+    }
     NSLog(@"--dealloc--NCameraManagerDefaultViewController");
 }
 
@@ -71,8 +81,6 @@
     [self setEdgesForExtendedLayout:UIRectEdgeNone];
     //    self.topBarView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5f];
 
-    _cameraAudioTimerShowView.layer.masksToBounds = true;
-    _cameraAudioTimerShowView.layer.cornerRadius = 8.0f;
     _cameraAudioTimerView.layer.masksToBounds = true;
     _cameraAudioTimerView.layer.cornerRadius = 4.0f;
     _cameraAudioTimerView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5f];
@@ -154,6 +162,26 @@
     }];
 }
 
+- (IBAction)settingAction:(id)sender {
+}
+
+#pragma mark previewView Action
+- (IBAction)audioPauseAction:(id)sender {
+    NSError *error = nil;
+    if (_cameraAudioTimerPauseButton.selected) {
+        if ([_audioManager startRecordWithPrefix:nil error:&error] == NCameraManagerResultSuccess && !error) {
+            _cameraAudioTimerPauseButton.selected = !_cameraAudioTimerPauseButton.selected;
+            [_audioTimer setFireDate:[NSDate date]];
+        }
+
+    } else {
+        if ([_audioManager pauseRecordWithError:&error] == NCameraManagerResultSuccess && !error) {
+            _cameraAudioTimerPauseButton.selected = !_cameraAudioTimerPauseButton.selected;
+            [_audioTimer setFireDate:[NSDate distantFuture]];
+        }
+    }
+}
+
 #pragma mark bottomView Action
 - (IBAction)stillImageAction:(id)sender {
     [_cameraManager
@@ -201,9 +229,14 @@
     [self uploadCameraManagerRecord];
 }
 
+- (IBAction)pushPlayListAction:(id)sender {
+    NPlayListViewController *playListViewController = [[NPlayListViewController alloc] init];
+    [self.navigationController pushViewController:playListViewController animated:true];
+}
+
 #pragma mark - Private
 - (void)uploadAudioManagerRecord {
-    if (_audioManager.isRecording) {
+    if ([_audioManager isRecording] || [_audioManager isRecordPausing]) {
         [_audioManager
             stopRecordWithBlock:^(NCameraManagerResult result, NSString *fullPathFileName, NCMFilePathInDirectory relativeDirectory, NSError *error) {
                 NSLog(@"--stopRecordWithBlock\n--result = %ld\n--fullPathFileName = %@\n--relativeDirectory = %ld\n--error = %@", result, fullPathFileName,
@@ -227,9 +260,9 @@
     }
 }
 
-static NSTimeInterval kCameraBottomViewAlphaTimeInterval = 0.5f;
+static NSTimeInterval kNCameraBottomViewAlphaTimeInterval = 0.5f;
 - (void)uploadCameraManagerRecord {
-    if (_cameraManager.isMovieRecording) {
+    if ([_cameraManager isMovieRecording]) {
         [_cameraManager
             stopMovieRecordWithFileName:nil
                                  isSave:true
@@ -242,7 +275,7 @@ static NSTimeInterval kCameraBottomViewAlphaTimeInterval = 0.5f;
                                               _cameraVideoButton.selected = false;
                                               [self removeMovieTimer];
 
-                                              [UIView animateWithDuration:kCameraBottomViewAlphaTimeInterval
+                                              [UIView animateWithDuration:kNCameraBottomViewAlphaTimeInterval
                                                                animations:^{
                                                                    _cameraBottomView.backgroundColor = [UIColor blackColor];
                                                                    _cameraTopView.backgroundColor = [UIColor blackColor];
@@ -259,7 +292,7 @@ static NSTimeInterval kCameraBottomViewAlphaTimeInterval = 0.5f;
                     _cameraVideoTimerView.hidden = false;
                     _cameraVideoButton.selected = true;
 
-                    [UIView animateWithDuration:kCameraBottomViewAlphaTimeInterval
+                    [UIView animateWithDuration:kNCameraBottomViewAlphaTimeInterval
                                      animations:^{
                                          _cameraBottomView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5f];
                                          _cameraTopView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5f];
@@ -282,7 +315,6 @@ static NSTimeInterval kCameraBottomViewAlphaTimeInterval = 0.5f;
     NSString *hoursString = [NSString stringWithFormat:@"%02ld", (long)hours];
 
     _cameraAudioTimerLabel.text = [NSString stringWithFormat:@"%@:%@:%@", hoursString, minuteString, secondString];
-    _cameraAudioTimerShowView.hidden = _audioCount % 2;
 }
 
 - (void)uploadVideoTimerUI {
@@ -302,9 +334,10 @@ static NSTimeInterval kCameraBottomViewAlphaTimeInterval = 0.5f;
 
 #pragma mark - Timer
 - (void)setupAudioRecordTimer {
+
     _audioCount = 0;
     _cameraAudioTimerLabel.text = @"00:00:00";
-    _cameraAudioTimerShowView.hidden = false;
+    _cameraAudioTimerPauseButton.selected = false;
     self.audioTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(uploadAudioTimerUI) userInfo:nil repeats:true];
 }
 
