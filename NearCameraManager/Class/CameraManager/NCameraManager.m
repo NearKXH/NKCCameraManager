@@ -46,6 +46,7 @@ typedef NS_OPTIONS(NSUInteger, NCameraManagerDeviceConfigion) {
 @property (nonatomic, strong) NSString *recordFileName;
 @property (nonatomic, assign) BOOL isSaveRecord;
 @property (nonatomic, copy) NCameraManagerRecordBlock recordFinishBlock;
+@property (nonatomic, copy) NCameraManagerResultBlock recordStartBlock;
 
 @property (nonatomic, assign, readonly, getter=isImageStilling) BOOL imageStilling;
 
@@ -589,12 +590,10 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
                 return;
             }
 
+            self.recordStartBlock = block;
             NSString *outputFileName = [outputFilePath stringByAppendingPathExtension:@"mov"];
             NSURL *fileUrl = [NSURL fileURLWithPath:outputFileName];
             [self.movieFileOutput startRecordingToOutputFileURL:fileUrl recordingDelegate:self];
-            if (block) {
-                block(NCameraManagerResultSuccess, nil);
-            }
         } else {
             if (block) {
                 NSError *error = [NSError NCM_errorWithCode:NCameraManagerResultCameraFailWithRecording message:@"Camera is not still recording"];
@@ -621,6 +620,13 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
 }
 
 #pragma mark - File Output Recording Delegate
+- (void)captureOutput:(AVCaptureFileOutput *)captureOutput didStartRecordingToOutputFileAtURL:(NSURL *)fileURL fromConnections:(NSArray *)connections {
+    if (self.recordStartBlock) {
+        self.recordStartBlock(NCameraManagerResultSuccess, nil);
+    }
+    self.recordStartBlock = nil;
+}
+
 - (void)captureOutput:(AVCaptureFileOutput *)captureOutput
     didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL
                         fromConnections:(NSArray *)connections

@@ -12,9 +12,12 @@
                 <outlet property="cameraAudioTimerPauseButton" destination="DVP-Wc-c8g" id="49Z-qJ-e8h"/>
                 <outlet property="cameraAudioTimerView" destination="WjL-US-K0G" id="i3M-PD-tQX"/>
                 <outlet property="cameraBottomView" destination="kLl-ek-ivl" id="Tao-fm-iga"/>
+                <outlet property="cameraChangeButton" destination="iyf-nx-aRI" id="TtT-ou-v4V"/>
                 <outlet property="cameraFlashButton" destination="eQT-kk-exY" id="wrE-Kd-uzV"/>
                 <outlet property="cameraHDRButton" destination="xa3-TE-wND" id="Kuy-Cz-rEU"/>
+                <outlet property="cameraPlayButton" destination="jkV-iC-RC7" id="zg8-yF-7p7"/>
                 <outlet property="cameraPreviewView" destination="9V8-DV-kS3" id="3gK-f1-8ZB"/>
+                <outlet property="cameraSettingButton" destination="jcm-DA-eMT" id="tMc-cH-7wl"/>
                 <outlet property="cameraTopView" destination="wOe-Bn-1dq" id="dBX-YH-qjx"/>
                 <outlet property="cameraVideoButton" destination="tNN-2I-tJd" id="BLx-Ky-jbw"/>
                 <outlet property="cameraVideoTimerLabel" destination="m8L-RR-tq6" id="JmE-XH-Fje"/>
@@ -256,7 +259,7 @@
                                 <constraint firstAttribute="width" constant="60" id="VcC-Uj-zgp"/>
                                 <constraint firstAttribute="height" constant="60" id="Xda-QY-zhL"/>
                             </constraints>
-                            <state key="normal" image="record-on"/>
+                            <state key="normal" image="record"/>
                             <state key="selected" image="record-on"/>
                             <connections>
                                 <action selector="videoRecordAction:" destination="-1" eventType="touchUpInside" id="X7B-6X-35S"/>
@@ -345,6 +348,7 @@
         <image name="list" width="45" height="45"/>
         <image name="pause" width="16" height="16"/>
         <image name="previous" width="16" height="16"/>
+        <image name="record" width="60" height="60"/>
         <image name="record-on" width="60" height="60"/>
         <image name="rotate" width="30" height="30"/>
     </resources>

@@ -17,6 +17,7 @@
 @property (nonatomic, assign, readonly, getter=isDirectory) BOOL directory;
 
 @property (nonatomic, assign, readonly) unsigned long long size;
+@property (nonatomic, strong, readonly) NSDate *createTime;
 
 - (instancetype)initWithFullPathFileName:(NSString *)fullPathName;
 

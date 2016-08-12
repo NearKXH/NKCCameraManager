@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="71" id="9Rp-eg-BjF" customClass="NCMPlayListAudioTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="55"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="9Rp-eg-BjF" id="KfN-6I-OAN">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="54"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xcs-MS-xyj">
+                        <rect key="frame" x="16" y="8" width="36" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="创建时间：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IWI-RP-evc">
+                        <rect key="frame" x="16" y="33" width="60" height="15"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1zW-V5-hIr">
+                        <rect key="frame" x="84" y="33" width="25" height="15"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="play" translatesAutoresizingMaskIntoConstraints="NO" id="cYp-LK-eSN">
+                        <rect key="frame" x="274" y="12" width="30" height="30"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="30" id="LRz-CU-xX3"/>
+                            <constraint firstAttribute="height" constant="30" id="yHn-f5-TC1"/>
+                        </constraints>
+                    </imageView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="cYp-LK-eSN" firstAttribute="centerY" secondItem="KfN-6I-OAN" secondAttribute="centerY" id="82A-8H-G2D"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="cYp-LK-eSN" secondAttribute="trailing" constant="8" id="IVy-VI-NCL"/>
+                    <constraint firstItem="1zW-V5-hIr" firstAttribute="centerY" secondItem="IWI-RP-evc" secondAttribute="centerY" id="Kw0-YE-qXS"/>
+                    <constraint firstItem="xcs-MS-xyj" firstAttribute="leading" secondItem="KfN-6I-OAN" secondAttribute="leading" constant="16" id="LLe-uW-cr7"/>
+                    <constraint firstItem="1zW-V5-hIr" firstAttribute="leading" secondItem="IWI-RP-evc" secondAttribute="trailing" constant="8" id="La9-fd-flA"/>
+                    <constraint firstItem="IWI-RP-evc" firstAttribute="top" secondItem="xcs-MS-xyj" secondAttribute="bottom" constant="8" id="Rd4-ZJ-I50"/>
+                    <constraint firstItem="IWI-RP-evc" firstAttribute="leading" secondItem="xcs-MS-xyj" secondAttribute="leading" id="h25-ba-uRT"/>
+                    <constraint firstItem="xcs-MS-xyj" firstAttribute="top" secondItem="KfN-6I-OAN" secondAttribute="top" constant="8" id="s5t-OE-v7P"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="fileCreateTimeLabel" destination="1zW-V5-hIr" id="2pc-La-j6G"/>
+                <outlet property="fileNameLabel" destination="xcs-MS-xyj" id="rg8-MT-Hu1"/>
+                <outlet property="showButton" destination="cYp-LK-eSN" id="y18-Wc-6rI"/>
+            </connections>
+            <point key="canvasLocation" x="422" y="311.5"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="play" width="60" height="60"/>
+    </resources>
+</document>

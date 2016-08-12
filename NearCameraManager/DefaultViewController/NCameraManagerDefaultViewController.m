@@ -9,8 +9,9 @@
 #import "NCameraManagerDefaultViewController.h"
 
 #import "NAudioManager.h"
+#import "NCMPlayListViewController.h"
+#import "NCMSettingViewController.h"
 #import "NCameraManager.h"
-#import "NPlayListViewController.h"
 
 #import "NSFileManager+NCMFileOperationManager.h"
 #import "UIImage+NCMImageScale.h"
@@ -19,6 +20,8 @@
 @property (weak, nonatomic) IBOutlet UIView *cameraTopView;
 @property (weak, nonatomic) IBOutlet UIButton *cameraFlashButton;
 @property (weak, nonatomic) IBOutlet UIButton *cameraHDRButton;
+@property (weak, nonatomic) IBOutlet UIButton *cameraChangeButton;
+@property (weak, nonatomic) IBOutlet UIButton *cameraSettingButton;
 
 @property (weak, nonatomic) IBOutlet UIView *cameraPreviewView;
 @property (weak, nonatomic) IBOutlet UIView *cameraAudioTimerView;
@@ -31,6 +34,7 @@
 @property (weak, nonatomic) IBOutlet UIView *cameraBottomView;
 @property (weak, nonatomic) IBOutlet UIButton *cameraAudioButton;
 @property (weak, nonatomic) IBOutlet UIButton *cameraVideoButton;
+@property (weak, nonatomic) IBOutlet UIButton *cameraPlayButton;
 
 @property (nonatomic, strong) NCameraManager *cameraManager;
 @property (nonatomic, strong) NAudioManager *audioManager;
@@ -79,7 +83,6 @@
 
 - (void)configUI {
     [self setEdgesForExtendedLayout:UIRectEdgeNone];
-    //    self.topBarView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5f];
 
     _cameraAudioTimerView.layer.masksToBounds = true;
     _cameraAudioTimerView.layer.cornerRadius = 4.0f;
@@ -93,7 +96,7 @@
 }
 
 - (void)configData {
-    self.audioManager = [NAudioManager audioManagerWithFileFormat:NAudioManagerFileFormatCAF quality:NAudioManagerQualityHigh];
+    self.audioManager = [NAudioManager audioManagerWithFileFormat:NAudioManagerFileFormatAAC quality:NAudioManagerQualityHigh];
 
     self.cameraManager = [NCameraManager cameraManagerAuthorizationWithMode:NCameraManagerModeVedio
                                                                 previewView:self.view
@@ -163,6 +166,8 @@
 }
 
 - (IBAction)settingAction:(id)sender {
+    NCMSettingViewController *settingViewController = [[NCMSettingViewController alloc] init];
+    [self.navigationController pushViewController:settingViewController animated:true];
 }
 
 #pragma mark previewView Action
@@ -230,7 +235,7 @@
 }
 
 - (IBAction)pushPlayListAction:(id)sender {
-    NPlayListViewController *playListViewController = [[NPlayListViewController alloc] init];
+    NCMPlayListViewController *playListViewController = [[NCMPlayListViewController alloc] init];
     [self.navigationController pushViewController:playListViewController animated:true];
 }
 
@@ -242,11 +247,10 @@
                 NSLog(@"--stopRecordWithBlock\n--result = %ld\n--fullPathFileName = %@\n--relativeDirectory = %ld\n--error = %@", result, fullPathFileName,
                       relativeDirectory, error);
                 if (result == NCameraManagerResultSuccess && !error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        _cameraAudioTimerView.hidden = true;
-                        _cameraAudioButton.selected = false;
-                        [self removeAudioTimer];
-                    });
+                    _cameraAudioTimerView.hidden = true;
+                    _cameraAudioButton.selected = false;
+                    [self removeAudioTimer];
+                    [self updateButtonState];
                 }
             }];
 
@@ -256,6 +260,7 @@
             [self setupAudioRecordTimer];
             _cameraAudioTimerView.hidden = false;
             _cameraAudioButton.selected = true;
+            [self updateButtonState];
         }
     }
 }
@@ -274,6 +279,39 @@ static NSTimeInterval kNCameraBottomViewAlphaTimeInterval = 0.5f;
                                               _cameraVideoTimerView.hidden = true;
                                               _cameraVideoButton.selected = false;
                                               [self removeMovieTimer];
+                                              [self updateButtonState];
+
+                                              UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"是否保存"
+                                                                                                                       message:nil
+                                                                                                                preferredStyle:UIAlertControllerStyleAlert];
+                                              [alertController addTextFieldWithConfigurationHandler:^(UITextField *_Nonnull textField) {
+                                                  textField.placeholder = fileFullPath;
+                                              }];
+                                              UIAlertAction *cancel =
+                                                  [UIAlertAction actionWithTitle:@"取消"
+                                                                           style:UIAlertActionStyleCancel
+                                                                         handler:^(UIAlertAction *_Nonnull action) {
+                                                                             [NSFileManager NCM_clearFileWithFullFilePath:fileFullPath error:nil];
+                                                                         }];
+
+                                              UIAlertAction *config = [UIAlertAction
+                                                  actionWithTitle:@"确定"
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:^(UIAlertAction *_Nonnull action) {
+                                                              UITextField *textField = alertController.textFields.firstObject;
+                                                              if (![textField.text isEqualToString:@""]) {
+                                                                  [NSFileManager
+                                                                      NCM_moveFileFromOriginalPath:directory
+                                                                                  originalFileName:[fileFullPath lastPathComponent]
+                                                                                            toPath:directory
+                                                                                        toFileName:[textField.text stringByAppendingPathExtension:@"aac"]
+                                                                                            isCopy:false
+                                                                                             block:nil];
+                                                              }
+                                                          }];
+
+                                              [alertController addAction:cancel];
+                                              [alertController addAction:config];
 
                                               [UIView animateWithDuration:kNCameraBottomViewAlphaTimeInterval
                                                                animations:^{
@@ -291,6 +329,7 @@ static NSTimeInterval kNCameraBottomViewAlphaTimeInterval = 0.5f;
                     [self setupCameraRecordTimer];
                     _cameraVideoTimerView.hidden = false;
                     _cameraVideoButton.selected = true;
+                    [self updateButtonState];
 
                     [UIView animateWithDuration:kNCameraBottomViewAlphaTimeInterval
                                      animations:^{
@@ -332,9 +371,31 @@ static NSTimeInterval kNCameraBottomViewAlphaTimeInterval = 0.5f;
     _cameraVideoTimerShowView.hidden = _videoCount % 2;
 }
 
+- (void)updateButtonState {
+    if ([_audioManager isRecording] || [_audioManager isRecordPausing]) {
+        _cameraPlayButton.enabled = false;
+        _cameraSettingButton.enabled = false;
+        return;
+    }
+
+    if (([_cameraManager isMovieRecording])) {
+        _cameraPlayButton.enabled = false;
+        _cameraFlashButton.enabled = false;
+        _cameraHDRButton.enabled = false;
+        _cameraChangeButton.enabled = false;
+        _cameraSettingButton.enabled = false;
+        return;
+    }
+
+    _cameraPlayButton.enabled = true;
+    _cameraFlashButton.enabled = true;
+    _cameraHDRButton.enabled = true;
+    _cameraChangeButton.enabled = true;
+    _cameraSettingButton.enabled = true;
+}
+
 #pragma mark - Timer
 - (void)setupAudioRecordTimer {
-
     _audioCount = 0;
     _cameraAudioTimerLabel.text = @"00:00:00";
     _cameraAudioTimerPauseButton.selected = false;

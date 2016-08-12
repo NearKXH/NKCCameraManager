@@ -135,9 +135,11 @@ static NSString *const kNCameraManagerFileNamePrefix = @"NCM";
             result = NCameraManagerResultFileFailWithMoveOrCopy;
         }
 
-        if (block) {
-            block(result, toFullPath, error);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (block) {
+                block(result, toFullPath, error);
+            }
+        });
     });
 }
 

@@ -254,14 +254,7 @@
 }
 
 - (NCameraManagerResult)playWithFullPathFileName:(NSString *)fileName error:(NSError **)error finishBlock:(NAudioManagerFinishPlayingBlock)block {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *tmpError = nil;
-
-    if (![fileManager fileExistsAtPath:fileName]) {
-        tmpError = [NSError NCM_errorWithCode:NCameraManagerResultConverFailWithOriginalFileNotExists message:@"Original File Not-Exists"];
-        [NSError NCM_perfectErrorWithErrorIndicator:error error:tmpError];
-        return NCameraManagerResultConverFailWithOriginalFileNotExists;
-    }
 
     if (self.isPlaying) {
         tmpError = [NSError NCM_errorWithCode:NCameraManagerResultPlayFailWithPlaying message:@"Audio is playing"];
@@ -274,8 +267,14 @@
         [NSError NCM_perfectErrorWithErrorIndicator:error error:tmpError];
         return NCameraManagerResultPlayFailWithSession;
     }
-
+    
     if (!self.playPausing) {
+        if (![[NSFileManager defaultManager] fileExistsAtPath:fileName]) {
+            tmpError = [NSError NCM_errorWithCode:NCameraManagerResultConverFailWithOriginalFileNotExists message:@"Original File Not-Exists"];
+            [NSError NCM_perfectErrorWithErrorIndicator:error error:tmpError];
+            return NCameraManagerResultConverFailWithOriginalFileNotExists;
+        }
+
         NSURL *url = [NSURL fileURLWithPath:fileName];
         self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&tmpError];
         self.audioPlayer.delegate = self;
@@ -360,6 +359,7 @@
     if (self.playFinishBlock) {
         self.playFinishBlock(flag);
     }
+    self.playFinishBlock = nil;
 }
 
 #pragma mark - property

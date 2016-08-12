@@ -21,6 +21,7 @@
         if (_exists) {
             NSDictionary *dictionary = [fileManager attributesOfItemAtPath:fullPathName error:nil];
             _size = [dictionary fileSize];
+            _createTime = [dictionary fileCreationDate];
         }
     }
     return self;

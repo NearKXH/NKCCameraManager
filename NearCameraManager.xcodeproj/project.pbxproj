@@ -26,12 +26,14 @@
 		0DD2D0291D4AF6AA005F92BC /* NSFileManager+NCMFileOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD2D0281D4AF6AA005F92BC /* NSFileManager+NCMFileOperationManager.m */; };
 		0DD2D0311D4AF890005F92BC /* NCMFileDetailImformationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD2D0301D4AF890005F92BC /* NCMFileDetailImformationModel.m */; };
 		0DD2D0341D4AF8C7005F92BC /* NAudioManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD2D0331D4AF8C7005F92BC /* NAudioManager.m */; };
+		0DE7EBEA1D5D650A005AB8AB /* NCMPlayListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DE7EBE91D5D650A005AB8AB /* NCMPlayListViewController.m */; };
+		0DE7EBF21D5D663C005AB8AB /* NCMPlayListHeaderFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DE7EBF11D5D663C005AB8AB /* NCMPlayListHeaderFooterView.m */; };
+		0DE7EBF41D5D6685005AB8AB /* NCMPlayListHeaderFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0DE7EBF31D5D6685005AB8AB /* NCMPlayListHeaderFooterView.xib */; };
+		0DE7EBF71D5D6739005AB8AB /* NCMPlayListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DE7EBF61D5D6739005AB8AB /* NCMPlayListModel.m */; };
+		0DE7EBFB1D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DE7EBF91D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.m */; };
+		0DE7EBFC1D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0DE7EBFA1D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.xib */; };
 		0DF047941D5C5720008A0237 /* NCMSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DF047921D5C5720008A0237 /* NCMSettingViewController.m */; };
 		0DF047951D5C5720008A0237 /* NCMSettingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0DF047931D5C5720008A0237 /* NCMSettingViewController.xib */; };
-		0DF047991D5C6D9B008A0237 /* NPlayListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DF047971D5C6D9B008A0237 /* NPlayListViewController.m */; };
-		0DF047A01D5C73B9008A0237 /* NPlayListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DF0479E1D5C73B9008A0237 /* NPlayListTableViewCell.m */; };
-		0DF047A11D5C73B9008A0237 /* NPlayListTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0DF0479F1D5C73B9008A0237 /* NPlayListTableViewCell.xib */; };
-		0DF047A41D5C75EC008A0237 /* NPlayListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DF047A31D5C75EC008A0237 /* NPlayListModel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,16 +72,19 @@
 		0DD2D0301D4AF890005F92BC /* NCMFileDetailImformationModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCMFileDetailImformationModel.m; sourceTree = "<group>"; };
 		0DD2D0321D4AF8C7005F92BC /* NAudioManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NAudioManager.h; sourceTree = "<group>"; };
 		0DD2D0331D4AF8C7005F92BC /* NAudioManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NAudioManager.m; sourceTree = "<group>"; };
+		0DE7EBE81D5D650A005AB8AB /* NCMPlayListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCMPlayListViewController.h; sourceTree = "<group>"; };
+		0DE7EBE91D5D650A005AB8AB /* NCMPlayListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCMPlayListViewController.m; sourceTree = "<group>"; };
+		0DE7EBF01D5D663C005AB8AB /* NCMPlayListHeaderFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCMPlayListHeaderFooterView.h; sourceTree = "<group>"; };
+		0DE7EBF11D5D663C005AB8AB /* NCMPlayListHeaderFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCMPlayListHeaderFooterView.m; sourceTree = "<group>"; };
+		0DE7EBF31D5D6685005AB8AB /* NCMPlayListHeaderFooterView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCMPlayListHeaderFooterView.xib; sourceTree = "<group>"; };
+		0DE7EBF51D5D6739005AB8AB /* NCMPlayListModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCMPlayListModel.h; sourceTree = "<group>"; };
+		0DE7EBF61D5D6739005AB8AB /* NCMPlayListModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCMPlayListModel.m; sourceTree = "<group>"; };
+		0DE7EBF81D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCMPlayListAudioTableViewCell.h; sourceTree = "<group>"; };
+		0DE7EBF91D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCMPlayListAudioTableViewCell.m; sourceTree = "<group>"; };
+		0DE7EBFA1D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCMPlayListAudioTableViewCell.xib; sourceTree = "<group>"; };
 		0DF047911D5C5720008A0237 /* NCMSettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCMSettingViewController.h; sourceTree = "<group>"; };
 		0DF047921D5C5720008A0237 /* NCMSettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCMSettingViewController.m; sourceTree = "<group>"; };
 		0DF047931D5C5720008A0237 /* NCMSettingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCMSettingViewController.xib; sourceTree = "<group>"; };
-		0DF047961D5C6D9B008A0237 /* NPlayListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPlayListViewController.h; sourceTree = "<group>"; };
-		0DF047971D5C6D9B008A0237 /* NPlayListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NPlayListViewController.m; sourceTree = "<group>"; };
-		0DF0479D1D5C73B9008A0237 /* NPlayListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPlayListTableViewCell.h; sourceTree = "<group>"; };
-		0DF0479E1D5C73B9008A0237 /* NPlayListTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NPlayListTableViewCell.m; sourceTree = "<group>"; };
-		0DF0479F1D5C73B9008A0237 /* NPlayListTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NPlayListTableViewCell.xib; sourceTree = "<group>"; };
-		0DF047A21D5C75EC008A0237 /* NPlayListModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPlayListModel.h; sourceTree = "<group>"; };
-		0DF047A31D5C75EC008A0237 /* NPlayListModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NPlayListModel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -232,8 +237,8 @@
 				0DF047911D5C5720008A0237 /* NCMSettingViewController.h */,
 				0DF047921D5C5720008A0237 /* NCMSettingViewController.m */,
 				0DF047931D5C5720008A0237 /* NCMSettingViewController.xib */,
-				0DF047961D5C6D9B008A0237 /* NPlayListViewController.h */,
-				0DF047971D5C6D9B008A0237 /* NPlayListViewController.m */,
+				0DE7EBE81D5D650A005AB8AB /* NCMPlayListViewController.h */,
+				0DE7EBE91D5D650A005AB8AB /* NCMPlayListViewController.m */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -241,9 +246,12 @@
 		0DF0479C1D5C739E008A0237 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				0DF0479D1D5C73B9008A0237 /* NPlayListTableViewCell.h */,
-				0DF0479E1D5C73B9008A0237 /* NPlayListTableViewCell.m */,
-				0DF0479F1D5C73B9008A0237 /* NPlayListTableViewCell.xib */,
+				0DE7EBF01D5D663C005AB8AB /* NCMPlayListHeaderFooterView.h */,
+				0DE7EBF11D5D663C005AB8AB /* NCMPlayListHeaderFooterView.m */,
+				0DE7EBF31D5D6685005AB8AB /* NCMPlayListHeaderFooterView.xib */,
+				0DE7EBF81D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.h */,
+				0DE7EBF91D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.m */,
+				0DE7EBFA1D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.xib */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -251,8 +259,8 @@
 		0DF047A51D5C75F0008A0237 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				0DF047A21D5C75EC008A0237 /* NPlayListModel.h */,
-				0DF047A31D5C75EC008A0237 /* NPlayListModel.m */,
+				0DE7EBF51D5D6739005AB8AB /* NCMPlayListModel.h */,
+				0DE7EBF61D5D6739005AB8AB /* NCMPlayListModel.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -316,12 +324,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0DE7EBFC1D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.xib in Resources */,
 				0DB5EE4E1D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.xib in Resources */,
 				0DB919CA1D4C485B00A297E0 /* NTmpViewController.xib in Resources */,
 				0DF047951D5C5720008A0237 /* NCMSettingViewController.xib in Resources */,
 				0DB919C81D4C485B00A297E0 /* NMainViewController.xib in Resources */,
-				0DF047A11D5C73B9008A0237 /* NPlayListTableViewCell.xib in Resources */,
 				0D554AE01D40B2860057FE76 /* LaunchScreen.xib in Resources */,
+				0DE7EBF41D5D6685005AB8AB /* NCMPlayListHeaderFooterView.xib in Resources */,
 				0D554AD51D40B1DB0057FE76 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -335,21 +344,22 @@
 			files = (
 				0DB919C71D4C485B00A297E0 /* NMainViewController.m in Sources */,
 				0DD2D0261D4AF636005F92BC /* NSError+NCMCustomErrorInstance.m in Sources */,
-				0DF047991D5C6D9B008A0237 /* NPlayListViewController.m in Sources */,
 				0DD2D0291D4AF6AA005F92BC /* NSFileManager+NCMFileOperationManager.m in Sources */,
 				0D554ACD1D40B1DA0057FE76 /* AppDelegate.m in Sources */,
-				0DF047A41D5C75EC008A0237 /* NPlayListModel.m in Sources */,
+				0DE7EBF71D5D6739005AB8AB /* NCMPlayListModel.m in Sources */,
 				0DD2D0211D4AF347005F92BC /* NAudioConvertManager.m in Sources */,
-				0DF047A01D5C73B9008A0237 /* NPlayListTableViewCell.m in Sources */,
 				0DB919BA1D4C483E00A297E0 /* NCameraPreviewView.m in Sources */,
 				0D554ACA1D40B1DA0057FE76 /* main.m in Sources */,
 				0DB919B91D4C483E00A297E0 /* NCameraManager.m in Sources */,
+				0DE7EBEA1D5D650A005AB8AB /* NCMPlayListViewController.m in Sources */,
 				0DD2D0341D4AF8C7005F92BC /* NAudioManager.m in Sources */,
 				0DB5EE4D1D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.m in Sources */,
 				0DB919CD1D4C4B0A00A297E0 /* UIImage+NCMImageScale.m in Sources */,
+				0DE7EBFB1D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.m in Sources */,
 				0DB919C91D4C485B00A297E0 /* NTmpViewController.m in Sources */,
 				0DF047941D5C5720008A0237 /* NCMSettingViewController.m in Sources */,
 				0DD2D0311D4AF890005F92BC /* NCMFileDetailImformationModel.m in Sources */,
+				0DE7EBF21D5D663C005AB8AB /* NCMPlayListHeaderFooterView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
