@@ -242,17 +242,48 @@
 #pragma mark - Private
 - (void)uploadAudioManagerRecord {
     if ([_audioManager isRecording] || [_audioManager isRecordPausing]) {
-        [_audioManager
-            stopRecordWithBlock:^(NCameraManagerResult result, NSString *fullPathFileName, NCMFilePathInDirectory relativeDirectory, NSError *error) {
-                NSLog(@"--stopRecordWithBlock\n--result = %ld\n--fullPathFileName = %@\n--relativeDirectory = %ld\n--error = %@", result, fullPathFileName,
-                      relativeDirectory, error);
-                if (result == NCameraManagerResultSuccess && !error) {
-                    _cameraAudioTimerView.hidden = true;
-                    _cameraAudioButton.selected = false;
-                    [self removeAudioTimer];
-                    [self updateButtonState];
-                }
-            }];
+        [_audioManager stopRecordWithBlock:^(NCameraManagerResult result, NSString *fullPathFileName, NCMFilePathInDirectory relativeDirectory,
+                                             NSError *error) {
+            NSLog(@"--stopRecordWithBlock\n--result = %ld\n--fullPathFileName = %@\n--relativeDirectory = %ld\n--error = %@", result, fullPathFileName,
+                  relativeDirectory, error);
+            if (result == NCameraManagerResultSuccess && !error) {
+                _cameraAudioTimerView.hidden = true;
+                _cameraAudioButton.selected = false;
+                [self removeAudioTimer];
+                [self updateButtonState];
+
+                UIAlertController *alertController =
+                    [UIAlertController alertControllerWithTitle:@"是否保存" message:nil preferredStyle:UIAlertControllerStyleAlert];
+                [alertController addTextFieldWithConfigurationHandler:^(UITextField *_Nonnull textField) {
+                    textField.placeholder = [fullPathFileName lastPathComponent];
+                }];
+                UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消"
+                                                                 style:UIAlertActionStyleCancel
+                                                               handler:^(UIAlertAction *_Nonnull action) {
+                                                                   [NSFileManager NCM_clearFileWithFullFilePath:fullPathFileName error:nil];
+                                                               }];
+                UIAlertAction *config = [UIAlertAction
+                    actionWithTitle:@"确定"
+                              style:UIAlertActionStyleDefault
+                            handler:^(UIAlertAction *_Nonnull action) {
+                                UITextField *textField = alertController.textFields.firstObject;
+                                if (![textField.text isEqualToString:@""]) {
+                                    [NSFileManager
+                                        NCM_moveFileFromOriginalPath:relativeDirectory
+                                                    originalFileName:[fullPathFileName lastPathComponent]
+                                                              toPath:relativeDirectory
+                                                          toFileName:[textField.text
+                                                                         stringByAppendingPathExtension:[[fullPathFileName lastPathComponent] pathExtension]]
+                                                              isCopy:false
+                                                               block:nil];
+                                }
+                            }];
+
+                [alertController addAction:cancel];
+                [alertController addAction:config];
+                [self presentViewController:alertController animated:true completion:nil];
+            }
+        }];
 
     } else {
         NSError *error = nil;
@@ -285,7 +316,7 @@ static NSTimeInterval kNCameraBottomViewAlphaTimeInterval = 0.5f;
                                                                                                                        message:nil
                                                                                                                 preferredStyle:UIAlertControllerStyleAlert];
                                               [alertController addTextFieldWithConfigurationHandler:^(UITextField *_Nonnull textField) {
-                                                  textField.placeholder = fileFullPath;
+                                                  textField.placeholder = [fileFullPath lastPathComponent];
                                               }];
                                               UIAlertAction *cancel =
                                                   [UIAlertAction actionWithTitle:@"取消"
@@ -296,7 +327,7 @@ static NSTimeInterval kNCameraBottomViewAlphaTimeInterval = 0.5f;
 
                                               UIAlertAction *config = [UIAlertAction
                                                   actionWithTitle:@"确定"
-                                                            style:UIAlertActionStyleCancel
+                                                            style:UIAlertActionStyleDefault
                                                           handler:^(UIAlertAction *_Nonnull action) {
                                                               UITextField *textField = alertController.textFields.firstObject;
                                                               if (![textField.text isEqualToString:@""]) {
@@ -304,7 +335,7 @@ static NSTimeInterval kNCameraBottomViewAlphaTimeInterval = 0.5f;
                                                                       NCM_moveFileFromOriginalPath:directory
                                                                                   originalFileName:[fileFullPath lastPathComponent]
                                                                                             toPath:directory
-                                                                                        toFileName:[textField.text stringByAppendingPathExtension:@"aac"]
+                                                                                        toFileName:[textField.text stringByAppendingPathExtension:@"mov"]
                                                                                             isCopy:false
                                                                                              block:nil];
                                                               }
@@ -312,6 +343,8 @@ static NSTimeInterval kNCameraBottomViewAlphaTimeInterval = 0.5f;
 
                                               [alertController addAction:cancel];
                                               [alertController addAction:config];
+
+                                              [self presentViewController:alertController animated:true completion:nil];
 
                                               [UIView animateWithDuration:kNCameraBottomViewAlphaTimeInterval
                                                                animations:^{

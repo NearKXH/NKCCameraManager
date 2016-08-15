@@ -234,11 +234,11 @@
 				0DB5EE471D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.h */,
 				0DB5EE481D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.m */,
 				0DB5EE491D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.xib */,
+				0DE7EBE81D5D650A005AB8AB /* NCMPlayListViewController.h */,
+				0DE7EBE91D5D650A005AB8AB /* NCMPlayListViewController.m */,
 				0DF047911D5C5720008A0237 /* NCMSettingViewController.h */,
 				0DF047921D5C5720008A0237 /* NCMSettingViewController.m */,
 				0DF047931D5C5720008A0237 /* NCMSettingViewController.xib */,
-				0DE7EBE81D5D650A005AB8AB /* NCMPlayListViewController.h */,
-				0DE7EBE91D5D650A005AB8AB /* NCMPlayListViewController.m */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";

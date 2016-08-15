@@ -57,7 +57,6 @@
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.tableFooterView = [[UIView alloc] init];
-    _tableView.rowHeight = 55;
 
     [_tableView registerNib:[UINib nibWithNibName:NSStringFromClass([NCMPlayListAudioTableViewCell class]) bundle:[NSBundle mainBundle]]
         forCellReuseIdentifier:kNCMPlayListAudioTableViewCellIdentifier];
@@ -68,7 +67,7 @@
     rect.origin.y = rect.size.height;
     rect.size.height = 60;
     UIView *view = [[UIView alloc] initWithFrame:rect];
-    view.backgroundColor = [UIColor whiteColor];
+    view.backgroundColor = [UIColor blackColor];
     [self.view addSubview:view];
 
     _audioButton = [[UIButton alloc] initWithFrame:CGRectMake(8, 8, 45, 45)];
@@ -78,6 +77,7 @@
 
     _audioLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 0, 200, 60)];
     _audioLabel.text = nil;
+    _audioLabel.textColor = [UIColor whiteColor];
     [view addSubview:_audioLabel];
 }
 
@@ -147,12 +147,31 @@ static NSString *const kNCMPlayListTableViewHeaderFooterViewIdentifier = @"kNCMP
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     NCMPlayListHeaderFooterView *view = [tableView dequeueReusableHeaderFooterViewWithIdentifier:kNCMPlayListTableViewHeaderFooterViewIdentifier];
     NCMPlayListModel *model = _sourceArray[section];
-    [view updateHeaderFooterViewWithModel:model];
+    [view updateHeaderFooterViewWithModel:model
+                                openBlock:^{
+                                    model.isOpen = !model.isOpen;
+                                    [_tableView reloadSections:[NSIndexSet indexSetWithIndex:section] withRowAnimation:UITableViewRowAnimationNone];
+                                }];
     return view;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 30;
+    return 60;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NCMPlayListModel *model = _sourceArray[indexPath.section];
+    NSInteger rowHeight = 0;
+    switch (model.modelType) {
+    case NCMPlayListModelTypeAudio:
+        rowHeight = 55;
+        break;
+
+    default:
+        break;
+    }
+
+    return rowHeight;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

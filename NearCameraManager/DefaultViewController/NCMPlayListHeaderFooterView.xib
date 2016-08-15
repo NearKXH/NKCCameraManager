@@ -15,16 +15,30 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="118"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="音频" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tNO-es-bJJ">
-                            <rect key="frame" x="8" y="48" width="34" height="21"/>
+                            <rect key="frame" x="84" y="48" width="34" height="21"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="music" translatesAutoresizingMaskIntoConstraints="NO" id="5SY-xf-IiP">
+                            <rect key="frame" x="8" y="29" width="60" height="60"/>
+                        </imageView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AMi-oM-Lcf">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="118"/>
+                            <connections>
+                                <action selector="openAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="kFN-11-P7S"/>
+                            </connections>
+                        </button>
                     </subviews>
-                    <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
-                        <constraint firstItem="tNO-es-bJJ" firstAttribute="leading" secondItem="IbF-4l-NRw" secondAttribute="leading" constant="8" id="jG2-yX-d3V"/>
-                        <constraint firstItem="tNO-es-bJJ" firstAttribute="centerY" secondItem="IbF-4l-NRw" secondAttribute="centerY" id="yQC-Bb-ha6"/>
+                        <constraint firstItem="AMi-oM-Lcf" firstAttribute="top" secondItem="IbF-4l-NRw" secondAttribute="top" id="757-e9-Dwx"/>
+                        <constraint firstAttribute="bottom" secondItem="AMi-oM-Lcf" secondAttribute="bottom" id="NUL-eS-knH"/>
+                        <constraint firstItem="5SY-xf-IiP" firstAttribute="leading" secondItem="IbF-4l-NRw" secondAttribute="leading" constant="8" id="NpU-cv-n7R"/>
+                        <constraint firstItem="AMi-oM-Lcf" firstAttribute="leading" secondItem="IbF-4l-NRw" secondAttribute="leading" id="T2f-9i-KaE"/>
+                        <constraint firstItem="tNO-es-bJJ" firstAttribute="centerY" secondItem="IbF-4l-NRw" secondAttribute="centerY" id="UEK-df-zb4"/>
+                        <constraint firstItem="tNO-es-bJJ" firstAttribute="leading" secondItem="5SY-xf-IiP" secondAttribute="trailing" constant="16" id="eMV-n7-B2q"/>
+                        <constraint firstItem="5SY-xf-IiP" firstAttribute="centerY" secondItem="IbF-4l-NRw" secondAttribute="centerY" id="gtg-bO-LXJ"/>
+                        <constraint firstAttribute="trailing" secondItem="AMi-oM-Lcf" secondAttribute="trailing" id="rdW-Rt-xpL"/>
                     </constraints>
                 </view>
             </subviews>
@@ -35,7 +49,14 @@
                 <constraint firstAttribute="bottom" secondItem="IbF-4l-NRw" secondAttribute="bottom" id="Sqe-F2-4eE"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="headerImage" destination="5SY-xf-IiP" id="UqY-Dv-aAn"/>
+                <outlet property="nameLabel" destination="tNO-es-bJJ" id="H30-68-u2F"/>
+            </connections>
             <point key="canvasLocation" x="424.5" y="353"/>
         </view>
     </objects>
+    <resources>
+        <image name="music" width="60" height="60"/>
+    </resources>
 </document>

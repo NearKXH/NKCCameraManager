@@ -10,5 +10,5 @@
 
 @class NCMPlayListModel;
 @interface NCMPlayListHeaderFooterView : UITableViewHeaderFooterView
-- (void)updateHeaderFooterViewWithModel:(NCMPlayListModel *)model;
+- (void)updateHeaderFooterViewWithModel:(NCMPlayListModel *)model openBlock:(void (^)())block;
 @end
