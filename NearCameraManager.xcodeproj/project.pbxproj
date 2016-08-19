@@ -19,13 +19,13 @@
 		0DB919C81D4C485B00A297E0 /* NMainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0DB919C31D4C485B00A297E0 /* NMainViewController.xib */; };
 		0DB919C91D4C485B00A297E0 /* NTmpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB919C51D4C485B00A297E0 /* NTmpViewController.m */; };
 		0DB919CA1D4C485B00A297E0 /* NTmpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0DB919C61D4C485B00A297E0 /* NTmpViewController.xib */; };
-		0DB919CD1D4C4B0A00A297E0 /* UIImage+NCMImageScale.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB919CC1D4C4B0A00A297E0 /* UIImage+NCMImageScale.m */; };
-		0DC962081D489AD100D732B1 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0DC962071D489AD100D732B1 /* libmp3lame.a */; };
-		0DD2D0211D4AF347005F92BC /* NAudioConvertManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD2D01E1D4AF347005F92BC /* NAudioConvertManager.m */; };
-		0DD2D0261D4AF636005F92BC /* NSError+NCMCustomErrorInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD2D0251D4AF636005F92BC /* NSError+NCMCustomErrorInstance.m */; };
-		0DD2D0291D4AF6AA005F92BC /* NSFileManager+NCMFileOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD2D0281D4AF6AA005F92BC /* NSFileManager+NCMFileOperationManager.m */; };
-		0DD2D0311D4AF890005F92BC /* NCMFileDetailImformationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD2D0301D4AF890005F92BC /* NCMFileDetailImformationModel.m */; };
 		0DD2D0341D4AF8C7005F92BC /* NAudioManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD2D0331D4AF8C7005F92BC /* NAudioManager.m */; };
+		0DD6ABC11D66E3EE00FD379D /* NSError+NCMCustomErrorInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD6ABB91D66E3EE00FD379D /* NSError+NCMCustomErrorInstance.m */; };
+		0DD6ABC21D66E3EE00FD379D /* NSFileManager+NCMFileOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD6ABBB1D66E3EE00FD379D /* NSFileManager+NCMFileOperationManager.m */; };
+		0DD6ABC31D66E3EE00FD379D /* UIImage+NCMImageScale.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD6ABBD1D66E3EE00FD379D /* UIImage+NCMImageScale.m */; };
+		0DD6ABC41D66E3EE00FD379D /* NCMFileDetailImformationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD6ABC01D66E3EE00FD379D /* NCMFileDetailImformationModel.m */; };
+		0DD6ABCB1D66E40B00FD379D /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0DD6ABC81D66E40B00FD379D /* libmp3lame.a */; };
+		0DD6ABCC1D66E40B00FD379D /* NAudioConvertManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD6ABCA1D66E40B00FD379D /* NAudioConvertManager.m */; };
 		0DE7EBEA1D5D650A005AB8AB /* NCMPlayListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DE7EBE91D5D650A005AB8AB /* NCMPlayListViewController.m */; };
 		0DE7EBF21D5D663C005AB8AB /* NCMPlayListHeaderFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DE7EBF11D5D663C005AB8AB /* NCMPlayListHeaderFooterView.m */; };
 		0DE7EBF41D5D6685005AB8AB /* NCMPlayListHeaderFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0DE7EBF31D5D6685005AB8AB /* NCMPlayListHeaderFooterView.xib */; };
@@ -58,20 +58,20 @@
 		0DB919C41D4C485B00A297E0 /* NTmpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTmpViewController.h; sourceTree = "<group>"; };
 		0DB919C51D4C485B00A297E0 /* NTmpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTmpViewController.m; sourceTree = "<group>"; };
 		0DB919C61D4C485B00A297E0 /* NTmpViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NTmpViewController.xib; sourceTree = "<group>"; };
-		0DB919CB1D4C4B0A00A297E0 /* UIImage+NCMImageScale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+NCMImageScale.h"; sourceTree = "<group>"; };
-		0DB919CC1D4C4B0A00A297E0 /* UIImage+NCMImageScale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+NCMImageScale.m"; sourceTree = "<group>"; };
-		0DC962061D489AD100D732B1 /* lame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lame.h; sourceTree = "<group>"; };
-		0DC962071D489AD100D732B1 /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmp3lame.a; sourceTree = "<group>"; };
-		0DD2D01D1D4AF347005F92BC /* NAudioConvertManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NAudioConvertManager.h; sourceTree = "<group>"; };
-		0DD2D01E1D4AF347005F92BC /* NAudioConvertManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NAudioConvertManager.m; sourceTree = "<group>"; };
-		0DD2D0241D4AF636005F92BC /* NSError+NCMCustomErrorInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+NCMCustomErrorInstance.h"; sourceTree = "<group>"; };
-		0DD2D0251D4AF636005F92BC /* NSError+NCMCustomErrorInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+NCMCustomErrorInstance.m"; sourceTree = "<group>"; };
-		0DD2D0271D4AF6AA005F92BC /* NSFileManager+NCMFileOperationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+NCMFileOperationManager.h"; sourceTree = "<group>"; };
-		0DD2D0281D4AF6AA005F92BC /* NSFileManager+NCMFileOperationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+NCMFileOperationManager.m"; sourceTree = "<group>"; };
-		0DD2D02F1D4AF890005F92BC /* NCMFileDetailImformationModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCMFileDetailImformationModel.h; sourceTree = "<group>"; };
-		0DD2D0301D4AF890005F92BC /* NCMFileDetailImformationModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCMFileDetailImformationModel.m; sourceTree = "<group>"; };
 		0DD2D0321D4AF8C7005F92BC /* NAudioManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NAudioManager.h; sourceTree = "<group>"; };
 		0DD2D0331D4AF8C7005F92BC /* NAudioManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NAudioManager.m; sourceTree = "<group>"; };
+		0DD6ABB81D66E3EE00FD379D /* NSError+NCMCustomErrorInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+NCMCustomErrorInstance.h"; sourceTree = "<group>"; };
+		0DD6ABB91D66E3EE00FD379D /* NSError+NCMCustomErrorInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+NCMCustomErrorInstance.m"; sourceTree = "<group>"; };
+		0DD6ABBA1D66E3EE00FD379D /* NSFileManager+NCMFileOperationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+NCMFileOperationManager.h"; sourceTree = "<group>"; };
+		0DD6ABBB1D66E3EE00FD379D /* NSFileManager+NCMFileOperationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+NCMFileOperationManager.m"; sourceTree = "<group>"; };
+		0DD6ABBC1D66E3EE00FD379D /* UIImage+NCMImageScale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+NCMImageScale.h"; sourceTree = "<group>"; };
+		0DD6ABBD1D66E3EE00FD379D /* UIImage+NCMImageScale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+NCMImageScale.m"; sourceTree = "<group>"; };
+		0DD6ABBF1D66E3EE00FD379D /* NCMFileDetailImformationModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCMFileDetailImformationModel.h; sourceTree = "<group>"; };
+		0DD6ABC01D66E3EE00FD379D /* NCMFileDetailImformationModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCMFileDetailImformationModel.m; sourceTree = "<group>"; };
+		0DD6ABC71D66E40B00FD379D /* lame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lame.h; sourceTree = "<group>"; };
+		0DD6ABC81D66E40B00FD379D /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmp3lame.a; sourceTree = "<group>"; };
+		0DD6ABC91D66E40B00FD379D /* NAudioConvertManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NAudioConvertManager.h; sourceTree = "<group>"; };
+		0DD6ABCA1D66E40B00FD379D /* NAudioConvertManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NAudioConvertManager.m; sourceTree = "<group>"; };
 		0DE7EBE81D5D650A005AB8AB /* NCMPlayListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCMPlayListViewController.h; sourceTree = "<group>"; };
 		0DE7EBE91D5D650A005AB8AB /* NCMPlayListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCMPlayListViewController.m; sourceTree = "<group>"; };
 		0DE7EBF01D5D663C005AB8AB /* NCMPlayListHeaderFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCMPlayListHeaderFooterView.h; sourceTree = "<group>"; };
@@ -92,7 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0DC962081D489AD100D732B1 /* libmp3lame.a in Frameworks */,
+				0DD6ABCB1D66E40B00FD379D /* libmp3lame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,9 +121,7 @@
 				0D554ACB1D40B1DA0057FE76 /* AppDelegate.h */,
 				0D554ACC1D40B1DA0057FE76 /* AppDelegate.m */,
 				0D554AE21D40B47D0057FE76 /* Class */,
-				0DD2D02E1D4AF890005F92BC /* Model */,
-				0D554AE11D40B47D0057FE76 /* Category */,
-				0DC962051D489AD100D732B1 /* lame */,
+				0DD6ABC51D66E40B00FD379D /* Convert */,
 				0D554AE31D40B4B50057FE76 /* DefaultViewController */,
 				0DB919C01D4C485B00A297E0 /* TMP */,
 				0D554AD41D40B1DB0057FE76 /* Assets.xcassets */,
@@ -142,25 +140,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		0D554AE11D40B47D0057FE76 /* Category */ = {
-			isa = PBXGroup;
-			children = (
-				0DD2D0241D4AF636005F92BC /* NSError+NCMCustomErrorInstance.h */,
-				0DD2D0251D4AF636005F92BC /* NSError+NCMCustomErrorInstance.m */,
-				0DD2D0271D4AF6AA005F92BC /* NSFileManager+NCMFileOperationManager.h */,
-				0DD2D0281D4AF6AA005F92BC /* NSFileManager+NCMFileOperationManager.m */,
-				0DB919CB1D4C4B0A00A297E0 /* UIImage+NCMImageScale.h */,
-				0DB919CC1D4C4B0A00A297E0 /* UIImage+NCMImageScale.m */,
-			);
-			path = Category;
-			sourceTree = "<group>";
-		};
 		0D554AE21D40B47D0057FE76 /* Class */ = {
 			isa = PBXGroup;
 			children = (
 				0D554AE91D40B9F60057FE76 /* NCameraManagerHeader.h */,
 				0DD2D01C1D4AF347005F92BC /* AudioManager */,
 				0DD2D0231D4AF3B0005F92BC /* CameraManager */,
+				0DD6ABB71D66E3EE00FD379D /* Category */,
+				0DD6ABBE1D66E3EE00FD379D /* Model */,
 			);
 			path = Class;
 			sourceTree = "<group>";
@@ -188,20 +175,9 @@
 			path = TMP;
 			sourceTree = "<group>";
 		};
-		0DC962051D489AD100D732B1 /* lame */ = {
-			isa = PBXGroup;
-			children = (
-				0DC962061D489AD100D732B1 /* lame.h */,
-				0DC962071D489AD100D732B1 /* libmp3lame.a */,
-			);
-			path = lame;
-			sourceTree = "<group>";
-		};
 		0DD2D01C1D4AF347005F92BC /* AudioManager */ = {
 			isa = PBXGroup;
 			children = (
-				0DD2D01D1D4AF347005F92BC /* NAudioConvertManager.h */,
-				0DD2D01E1D4AF347005F92BC /* NAudioConvertManager.m */,
 				0DD2D0321D4AF8C7005F92BC /* NAudioManager.h */,
 				0DD2D0331D4AF8C7005F92BC /* NAudioManager.m */,
 			);
@@ -219,13 +195,45 @@
 			path = CameraManager;
 			sourceTree = "<group>";
 		};
-		0DD2D02E1D4AF890005F92BC /* Model */ = {
+		0DD6ABB71D66E3EE00FD379D /* Category */ = {
 			isa = PBXGroup;
 			children = (
-				0DD2D02F1D4AF890005F92BC /* NCMFileDetailImformationModel.h */,
-				0DD2D0301D4AF890005F92BC /* NCMFileDetailImformationModel.m */,
+				0DD6ABB81D66E3EE00FD379D /* NSError+NCMCustomErrorInstance.h */,
+				0DD6ABB91D66E3EE00FD379D /* NSError+NCMCustomErrorInstance.m */,
+				0DD6ABBA1D66E3EE00FD379D /* NSFileManager+NCMFileOperationManager.h */,
+				0DD6ABBB1D66E3EE00FD379D /* NSFileManager+NCMFileOperationManager.m */,
+				0DD6ABBC1D66E3EE00FD379D /* UIImage+NCMImageScale.h */,
+				0DD6ABBD1D66E3EE00FD379D /* UIImage+NCMImageScale.m */,
+			);
+			path = Category;
+			sourceTree = "<group>";
+		};
+		0DD6ABBE1D66E3EE00FD379D /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0DD6ABBF1D66E3EE00FD379D /* NCMFileDetailImformationModel.h */,
+				0DD6ABC01D66E3EE00FD379D /* NCMFileDetailImformationModel.m */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		0DD6ABC51D66E40B00FD379D /* Convert */ = {
+			isa = PBXGroup;
+			children = (
+				0DD6ABC61D66E40B00FD379D /* lame */,
+				0DD6ABC91D66E40B00FD379D /* NAudioConvertManager.h */,
+				0DD6ABCA1D66E40B00FD379D /* NAudioConvertManager.m */,
+			);
+			path = Convert;
+			sourceTree = "<group>";
+		};
+		0DD6ABC61D66E40B00FD379D /* lame */ = {
+			isa = PBXGroup;
+			children = (
+				0DD6ABC71D66E40B00FD379D /* lame.h */,
+				0DD6ABC81D66E40B00FD379D /* libmp3lame.a */,
+			);
+			path = lame;
 			sourceTree = "<group>";
 		};
 		0DF0479B1D5C7396008A0237 /* ViewController */ = {
@@ -343,22 +351,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				0DB919C71D4C485B00A297E0 /* NMainViewController.m in Sources */,
-				0DD2D0261D4AF636005F92BC /* NSError+NCMCustomErrorInstance.m in Sources */,
-				0DD2D0291D4AF6AA005F92BC /* NSFileManager+NCMFileOperationManager.m in Sources */,
 				0D554ACD1D40B1DA0057FE76 /* AppDelegate.m in Sources */,
 				0DE7EBF71D5D6739005AB8AB /* NCMPlayListModel.m in Sources */,
-				0DD2D0211D4AF347005F92BC /* NAudioConvertManager.m in Sources */,
 				0DB919BA1D4C483E00A297E0 /* NCameraPreviewView.m in Sources */,
 				0D554ACA1D40B1DA0057FE76 /* main.m in Sources */,
 				0DB919B91D4C483E00A297E0 /* NCameraManager.m in Sources */,
+				0DD6ABC21D66E3EE00FD379D /* NSFileManager+NCMFileOperationManager.m in Sources */,
+				0DD6ABC41D66E3EE00FD379D /* NCMFileDetailImformationModel.m in Sources */,
+				0DD6ABC31D66E3EE00FD379D /* UIImage+NCMImageScale.m in Sources */,
 				0DE7EBEA1D5D650A005AB8AB /* NCMPlayListViewController.m in Sources */,
 				0DD2D0341D4AF8C7005F92BC /* NAudioManager.m in Sources */,
 				0DB5EE4D1D59BD8B0040EAC4 /* NCameraManagerDefaultViewController.m in Sources */,
-				0DB919CD1D4C4B0A00A297E0 /* UIImage+NCMImageScale.m in Sources */,
 				0DE7EBFB1D5DC144005AB8AB /* NCMPlayListAudioTableViewCell.m in Sources */,
 				0DB919C91D4C485B00A297E0 /* NTmpViewController.m in Sources */,
 				0DF047941D5C5720008A0237 /* NCMSettingViewController.m in Sources */,
-				0DD2D0311D4AF890005F92BC /* NCMFileDetailImformationModel.m in Sources */,
+				0DD6ABCC1D66E40B00FD379D /* NAudioConvertManager.m in Sources */,
+				0DD6ABC11D66E3EE00FD379D /* NSError+NCMCustomErrorInstance.m in Sources */,
 				0DE7EBF21D5D663C005AB8AB /* NCMPlayListHeaderFooterView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -459,7 +467,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/NearCameraManager/lame",
+					"$(PROJECT_DIR)/NearCameraManager/Convert/lame",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = NearKong.NearCameraManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -478,7 +486,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/NearCameraManager/lame",
+					"$(PROJECT_DIR)/NearCameraManager/Convert/lame",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = NearKong.NearCameraManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -49,6 +49,11 @@ typedef void (^NCameraManagerRecordBlock)(NCameraManagerResult result, NSString 
 - (BOOL)changeFlashmode:(NCameraManagerFlashMode)flashMode error:(NSError **)error;
 
 /**
+ *  HDR
+ */
+- (void)updateHDR:(BOOL)enable block:(NCameraManagerResultBlock)block;
+
+/**
  *  CameraChanging
  */
 - (void)changeCameraWithHandle:(NCameraManagerResultBlock)block;

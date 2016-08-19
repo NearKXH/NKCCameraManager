@@ -408,6 +408,24 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
     return false;
 }
 
+/**
+ *  HDR
+ */
+- (void)updateHDR:(BOOL)enable block:(NCameraManagerResultBlock)block {
+    dispatch_async(self.sessionQueue, ^{
+        if (self.cameraSetupResult == NCameraManagerResultSuccess && !self.isSessionRunning) {
+            [self.session beginConfiguration];
+            self.videoDeviceInput.device.automaticallyAdjustsVideoHDREnabled = false;
+            self.videoDeviceInput.device.videoHDREnabled = enable;
+            [self.session commitConfiguration];
+
+            if (block) {
+                block(NCameraManagerResultSuccess, nil);
+            }
+        }
+    });
+}
+
 #pragma mark Camera Changing
 - (void)changeCameraWithHandle:(NCameraManagerResultBlock)block {
     dispatch_async(self.sessionQueue, ^{
@@ -696,7 +714,8 @@ static const char *kNCameraManagerSessionqueue = "kNCameraManagerSessionqueue";
 
 /**
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate & AVCaptureAudioDataOutputSampleBufferDelegate
-- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection
+*)connection {
     UIImage *image = [UIImage NCM_imageWithSampleBuffer:sampleBuffer];
     NSData *imageData = UIImageJPEGRepresentation(image, 1);
     [UIImage NCM_saveImageInPhotosLibraryFromData:imageData];
@@ -776,7 +795,8 @@ static NSString *const kNCameraManagerCapturingStillImageKVO = @"capturingStillI
     // see also the documentation of AVCaptureSessionInterruptionReason. Add observers to handle these session interruptions
     // and show a preview is paused message. See the documentation of AVCaptureSessionWasInterruptedNotification for other
     // interruption reasons.
-    //    [notificationCenter addObserver:self selector:@selector(sessionWasInterrupted:) name:AVCaptureSessionWasInterruptedNotification object:self.session];
+    //    [notificationCenter addObserver:self selector:@selector(sessionWasInterrupted:) name:AVCaptureSessionWasInterruptedNotification
+    //    object:self.session];
     //    [notificationCenter addObserver:self selector:@selector(sessionInterruptionEnded:) name:AVCaptureSessionInterruptionEndedNotification
     //    object:self.session];
 }
