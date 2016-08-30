@@ -95,7 +95,7 @@
         [recordSettings setObject:@(AVAudioQualityHigh) forKey:AVEncoderAudioQualityKey];
         [recordSettings setObject:@(AVAudioQualityHigh) forKey:AVEncoderAudioQualityForVBRKey];
         [recordSettings setObject:@(AVAudioQualityHigh) forKey:AVSampleRateConverterAudioQualityKey];
-        [recordSettings setObject:@(198000) forKey:AVEncoderBitRateKey];
+        [recordSettings setObject:@(192000) forKey:AVEncoderBitRateKey];
 
         break;
     case NAudioManagerQualityMax:
@@ -267,7 +267,7 @@
         [NSError NCM_perfectErrorWithErrorIndicator:error error:tmpError];
         return NCameraManagerResultPlayFailWithSession;
     }
-    
+
     if (!self.playPausing) {
         if (![[NSFileManager defaultManager] fileExistsAtPath:fileName]) {
             tmpError = [NSError NCM_errorWithCode:NCameraManagerResultConverFailWithOriginalFileNotExists message:@"Original File Not-Exists"];
@@ -333,11 +333,11 @@
                                      toFileName:fileName
                                          isCopy:false
                                           block:^(NCameraManagerResult result, NSString *fullPath, NSError *error) {
+                                              self.audioRecorder = nil;
                                               if (self.recordFinishBlock) {
                                                   self.recordFinishBlock(result, fullPath, NCMFilePathInDirectoryDocumentOriginal, error);
                                               }
                                               self.recordFinishBlock = nil;
-                                              self.audioRecorder = nil;
                                           }];
 }
 
