@@ -8,8 +8,7 @@
 
 #import "AppDelegate.h"
 
-#import "NMainViewController.h"
-#import "NTmpViewController.h"
+#import "NCameraManagerDefaultViewController.h"
 
 @interface AppDelegate ()
 
@@ -24,8 +23,8 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
 
-    NTmpViewController *demoViewController = [[NTmpViewController alloc] init];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:demoViewController];
+    NCameraManagerDefaultViewController *mainViewController = [[NCameraManagerDefaultViewController alloc] init];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:mainViewController];
     id __weak weakNav = navigationController;
     navigationController.interactivePopGestureRecognizer.delegate = weakNav;
     self.window.rootViewController = navigationController;

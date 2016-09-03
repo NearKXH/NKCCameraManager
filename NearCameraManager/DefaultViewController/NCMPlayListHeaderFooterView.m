@@ -13,6 +13,7 @@
 @interface NCMPlayListHeaderFooterView ()
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *headerImage;
+@property (weak, nonatomic) IBOutlet UIImageView *openImageView;
 
 @property (nonatomic, strong) void (^block)();
 @end
@@ -44,6 +45,11 @@
 
     _nameLabel.text = headerName;
     _headerImage.image = [UIImage imageNamed:imageName];
+    if (model.isOpen) {
+        _openImageView.image = [UIImage imageNamed:@"arrowDown"];
+    } else {
+        _openImageView.image = [UIImage imageNamed:@"arrowRight"];
+    }
 
     _block = block;
 }

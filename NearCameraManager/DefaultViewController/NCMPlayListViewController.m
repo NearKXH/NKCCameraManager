@@ -12,7 +12,9 @@
 #import "NCMFileDetailImformationModel.h"
 #import "NCMPlayListAudioTableViewCell.h"
 #import "NCMPlayListHeaderFooterView.h"
+#import "NCMPlayListImageTableViewCell.h"
 #import "NCMPlayListModel.h"
+#import "NCMShowImageViewController.h"
 
 #import "NSFileManager+NCMFileOperationManager.h"
 
@@ -52,30 +54,34 @@
     self.title = @"文件浏览";
 
     CGRect rect = self.view.bounds;
-    rect.size.height -= 60;
+    rect.size.height -= 75;
     _tableView = [[UITableView alloc] initWithFrame:rect style:UITableViewStylePlain];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.tableFooterView = [[UIView alloc] init];
+    _tableView.rowHeight = 55;
+    _tableView.estimatedRowHeight = 55;
 
     [_tableView registerNib:[UINib nibWithNibName:NSStringFromClass([NCMPlayListAudioTableViewCell class]) bundle:[NSBundle mainBundle]]
         forCellReuseIdentifier:kNCMPlayListAudioTableViewCellIdentifier];
+    [_tableView registerNib:[UINib nibWithNibName:NSStringFromClass([NCMPlayListImageTableViewCell class]) bundle:[NSBundle mainBundle]]
+        forCellReuseIdentifier:kNCMPlayListImageTableViewCellIdentifier];
     [_tableView registerNib:[UINib nibWithNibName:NSStringFromClass([NCMPlayListHeaderFooterView class]) bundle:[NSBundle mainBundle]]
         forHeaderFooterViewReuseIdentifier:kNCMPlayListTableViewHeaderFooterViewIdentifier];
     [self.view addSubview:_tableView];
 
     rect.origin.y = rect.size.height;
-    rect.size.height = 60;
+    rect.size.height = 75;
     UIView *view = [[UIView alloc] initWithFrame:rect];
     view.backgroundColor = [UIColor blackColor];
     [self.view addSubview:view];
 
-    _audioButton = [[UIButton alloc] initWithFrame:CGRectMake(8, 8, 45, 45)];
+    _audioButton = [[UIButton alloc] initWithFrame:CGRectMake(8, 8, 60, 60)];
     [_audioButton setImage:[UIImage imageNamed:@"play"] forState:UIControlStateNormal];
     [_audioButton addTarget:self action:@selector(audioAction) forControlEvents:UIControlEventTouchUpInside];
     [view addSubview:_audioButton];
 
-    _audioLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 0, 200, 60)];
+    _audioLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 8, 200, 60)];
     _audioLabel.text = nil;
     _audioLabel.textColor = [UIColor whiteColor];
     [view addSubview:_audioLabel];
@@ -95,7 +101,7 @@
         NSString *filePathExtension = [tmpModel.fileName pathExtension];
         if ([filePathExtension isEqualToString:@"mov"]) {
             [videoMutabelArray addObject:tmpModel];
-        } else if ([filePathExtension isEqualToString:@"jepg"]) {
+        } else if ([filePathExtension isEqualToString:@"jpeg"]) {
             [imageMutabelArray addObject:tmpModel];
         } else if ([filePathExtension isEqualToString:@"aac"] || [filePathExtension isEqualToString:@"caf"] || [filePathExtension isEqualToString:@"mp3"]) {
             [audioMutabelArray addObject:tmpModel];
@@ -117,7 +123,6 @@
     _sourceArray = @[ imageModel, audioModel, videoModel ];
 
     audioModel.isOpen = true;
-    _sourceArray = @[ audioModel ];
 }
 
 #pragma mark - UITableViewDelegate & UITableViewDataSource
@@ -128,20 +133,58 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     NCMPlayListModel *model = _sourceArray[section];
     if (model.isOpen) {
-        return model.sourceMutableArray.count;
+        NSInteger count = 0;
+        switch (model.modelType) {
+        case NCMPlayListModelTypeImage:
+            count = 1;
+            break;
+        case NCMPlayListModelTypeAudio:
+            count = model.sourceMutableArray.count;
+            break;
+        case NCMPlayListModelTypeVideo:
+            count = model.sourceMutableArray.count;
+            break;
+        }
+        return count;
     } else {
         return 0;
     }
 }
 
 static NSString *const kNCMPlayListAudioTableViewCellIdentifier = @"kNCMPlayListAudioTableViewCellIdentifier";
+static NSString *const kNCMPlayListImageTableViewCellIdentifier = @"kNCMPlayListImageTableViewCellIdentifier";
 static NSString *const kNCMPlayListTableViewHeaderFooterViewIdentifier = @"kNCMPlayListTableViewHeaderFooterViewIdentifier";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NCMPlayListAudioTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kNCMPlayListAudioTableViewCellIdentifier forIndexPath:indexPath];
     NCMPlayListModel *playListModel = _sourceArray[indexPath.section];
-    NCMFileDetailImformationModel *detailModel = playListModel.sourceMutableArray[indexPath.row];
-    [cell updateCellWithModel:detailModel isShowButton:(indexPath.row == _audioCurrentRow)];
-    return cell;
+
+    if (playListModel.modelType == NCMPlayListModelTypeAudio) {
+        NCMPlayListAudioTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kNCMPlayListAudioTableViewCellIdentifier forIndexPath:indexPath];
+        NCMFileDetailImformationModel *detailModel = playListModel.sourceMutableArray[indexPath.row];
+        [cell updateCellWithModel:detailModel isShowButton:(indexPath.row == _audioCurrentRow)];
+        return cell;
+
+    } else if (playListModel.modelType == NCMPlayListModelTypeVideo) {
+        NCMPlayListAudioTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kNCMPlayListAudioTableViewCellIdentifier forIndexPath:indexPath];
+        NCMFileDetailImformationModel *detailModel = playListModel.sourceMutableArray[indexPath.row];
+        [cell updateCellWithModel:detailModel isShowButton:false];
+        return cell;
+
+    } else if (playListModel.modelType == NCMPlayListModelTypeImage) {
+        NCMPlayListImageTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kNCMPlayListImageTableViewCellIdentifier forIndexPath:indexPath];
+        [cell updateCellWithArray:playListModel.sourceMutableArray
+                      selectBlock:^(NSInteger row) {
+                          NCMShowImageViewController *showViewController =
+                              [[NCMShowImageViewController alloc] initWithSourceArray:playListModel.sourceMutableArray currentPage:row];
+                          [self presentViewController:showViewController
+                                             animated:true
+                                           completion:^{
+                                               [showViewController updateToItem:row];
+                                           }];
+                      }];
+        return cell;
+    }
+
+    return nil;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -150,24 +193,31 @@ static NSString *const kNCMPlayListTableViewHeaderFooterViewIdentifier = @"kNCMP
     [view updateHeaderFooterViewWithModel:model
                                 openBlock:^{
                                     model.isOpen = !model.isOpen;
-                                    [_tableView reloadSections:[NSIndexSet indexSetWithIndex:section] withRowAnimation:UITableViewRowAnimationNone];
+                                    [_tableView beginUpdates];
+                                    [_tableView reloadSections:[NSIndexSet indexSetWithIndex:section] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                    [_tableView endUpdates];
                                 }];
     return view;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 60;
+    return 60.0f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NCMPlayListModel *model = _sourceArray[indexPath.section];
-    NSInteger rowHeight = 0;
+    CGFloat rowHeight = 0.0f;
     switch (model.modelType) {
     case NCMPlayListModelTypeAudio:
-        rowHeight = 55;
+        rowHeight = 55.0f;
         break;
 
-    default:
+    case NCMPlayListModelTypeVideo:
+        rowHeight = 55.0f;
+        break;
+
+    case NCMPlayListModelTypeImage:
+        rowHeight = (([UIScreen mainScreen].bounds.size.width - 20) / 4 + 1) * ceilf((float)model.sourceMutableArray.count / 4.0f);
         break;
     }
 
